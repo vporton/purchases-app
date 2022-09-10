@@ -14,7 +14,7 @@ class MyMapState extends State<MyMap> {
   final Completer<GoogleMapController> _controller = Completer();
 
   final location = Location();
-  LatLng? userLocation = LatLng(10, 20); // TODO
+  LatLng? userLocation = const LatLng(10, 20); // TODO
 
   @override
   void initState() {
