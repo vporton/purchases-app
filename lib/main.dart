@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:purchases/map.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,14 +37,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
+        child: MapSample(), /*Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
+          children: <Widget>[
+            Text("Sample"),
+            // MapSample(),
           ],
-        ),
+        ),*/
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
