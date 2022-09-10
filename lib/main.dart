@@ -51,18 +51,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.menu),
+        // leading:
         title: Text(widget.title),
       ),
+      drawer: Drawer(
+          child: ListView(children: const [
+            ListTile(title: Text("Places")),
+            ListTile(title: Text("Products")),
+            ListTile(title: Text("Product categories")),
+          ]),
+      ),
       body: Center(
-        child: MyMap(), /*Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text("Sample"),
-            // MapSample(),
-          ],
-        ),*/
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: MyMap(),
+      ),
     );
   }
 }
