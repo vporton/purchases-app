@@ -22,6 +22,10 @@ class _PlacesState extends State<Places> {
       body: Center(
         child: ListView(children: []),
       ),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {}
+      ),
     );
   }
 }
