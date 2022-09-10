@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:purchases/map.dart';
+import 'package:purchases/places.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'db.dart';
@@ -28,10 +29,14 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Purchases App',
+      initialRoute: '/',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Purchases App'),
+      routes: {
+        '/': (context) => const MyHomePage(title: 'Purchases App'),
+        '/places': (context) => const Places(),
+      },
     );
   }
 
@@ -55,10 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       drawer: Drawer(
-          child: ListView(children: const [
-            ListTile(leading: Icon(Icons.place), title: Text("Places")),
-            ListTile(leading: Icon(Icons.shopping_cart), title: Text("Products")),
-            ListTile(leading: Icon(Icons.category), title: Text("Product categories")),
+          child: ListView(children: [
+            ListTile(leading: const Icon(Icons.place), title: Text("Places"), onTap: () { Navigator.pushNamed(context, '/places').then((value) {}); }),
+            ListTile(leading: const Icon(Icons.shopping_cart), title: Text("Products")),
+            ListTile(leading: const Icon(Icons.category), title: Text("Product categories")),
           ]),
       ),
       body: Center(
