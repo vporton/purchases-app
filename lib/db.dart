@@ -43,7 +43,7 @@ void _migrateInitial(Batch batch) {
 }
 
 var _migrations = [
-  _migrateInitial
+  _migrateInitial,
 ];
 
 Future<Database> openDatabase(DatabaseFactory factory, path) async {
