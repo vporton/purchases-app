@@ -48,7 +48,7 @@ var _migrations = [
 
 Future<Database> openDatabase(DatabaseFactory factory, path) async {
   var databasesPath = await getDatabasesPath();
-  var path = join(databasesPath, 'purchases.db');
+  var path = join(databasesPath, 'products.db');
 
   // Make sure the directory exists
   try {
