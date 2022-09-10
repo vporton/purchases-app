@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:purchases/map.dart';
+import 'package:sqflite/sqflite.dart';
+
+import 'db.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  Database? db;
+
+  @override
+  void initState() {
+    super.initState();
+    myOpenDatabase().then((db) => setState(() { this.db = db; }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +34,7 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Purchases App'),
     );
   }
+
 }
 
 class MyHomePage extends StatefulWidget {
@@ -34,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const Icon(Icons.menu),
         title: Text(widget.title),
       ),
       body: Center(

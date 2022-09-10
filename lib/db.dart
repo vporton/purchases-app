@@ -46,7 +46,7 @@ var _migrations = [
   _migrateInitial,
 ];
 
-Future<Database> openDatabase(DatabaseFactory factory, path) async {
+Future<Database> myOpenDatabase() async {
   var databasesPath = await getDatabasesPath();
   var path = join(databasesPath, 'products.db');
 
