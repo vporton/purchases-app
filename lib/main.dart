@@ -56,9 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
           child: ListView(children: const [
-            ListTile(title: Text("Places")),
-            ListTile(title: Text("Products")),
-            ListTile(title: Text("Product categories")),
+            ListTile(leading: Icon(Icons.place), title: Text("Places")),
+            ListTile(leading: Icon(Icons.shopping_cart), title: Text("Products")),
+            ListTile(leading: Icon(Icons.category), title: Text("Product categories")),
           ]),
       ),
       body: Center(
