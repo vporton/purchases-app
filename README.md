@@ -4,13 +4,7 @@ Track prices in different stores.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This is an Android/iOS app (take note that it was tested only on Android) for optimizing
+purchases in local stores.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+For bugs see [TODO](TODO.md) and `TODO`/`FIXME` in the source.
