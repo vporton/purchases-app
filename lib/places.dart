@@ -1,10 +1,9 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:path/path.dart';
 
 class Places extends StatefulWidget {
   const Places({super.key});
@@ -45,10 +44,10 @@ class PlacesAdd extends StatefulWidget {
 }
 
 class _PlaceData {
-  String placeId;
-  String name;
-  LatLng location;
-  Uri icon;
+  final String placeId;
+  final String name;
+  final LatLng location;
+  final Uri icon;
 
   // TODO: business_status == "OPERATIONAL"
 
@@ -84,8 +83,15 @@ class _PlacesAddState extends State<PlacesAdd> {
             .searchNearbyWithRadius(
                 Location(lat: coord!.latitude, lng: coord!.longitude), 2500)
             .then((PlacesSearchResponse response) {
-          var results =
-              response.results.map((r) => _PlaceData(placeId: r.placeId, name: r.name, location: LatLng(r.geometry.location?.lat!, r.geometry.location?.lng!), icon: Uri.parse(r.icon))).toList(growable: false);
+          var results = response.results
+              .map((r) => _PlaceData(
+                    placeId: r.placeId,
+                    name: r.name,
+                    location: LatLng(
+                        r?.geometry?.location?.lat as double, r?.geometry?.location?.lng as double),
+                    icon: Uri.parse(r.icon!),
+                  ))
+              .toList(growable: false);
           debugPrint("XXX: ${results.length}");
           setState(() {
             places = results;
@@ -111,13 +117,18 @@ class _PlacesAddState extends State<PlacesAdd> {
           ),
         ),
         Expanded(
-          child: // TODO: Is Expanded correct here?
-              ListView(
-                  children:
-                      places.map((e) =>
-                          Text(e.name)).toList(growable: false)
-              ),
-        ),
+          // TODO: Is Expanded correct here?
+          child: ListView.separated(
+            separatorBuilder: (context, index) => const Divider(
+              color: Colors.black45,
+            ),
+            itemCount: places.length,
+            itemBuilder: (context, index) => Row(children: [
+              Image.network(places[index].icon.toString(), scale: 2.0),
+              Text(places[index].name, textScaleFactor: 2.0)
+            ]),
+          ),
+        )
       ]),
     );
   }
