@@ -3,10 +3,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:purchases/map.dart';
 import 'package:purchases/places.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'db.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
@@ -46,7 +48,7 @@ class MyAppState extends State<MyApp> {
             title: 'Purchases App',
             onMove: onMove),
         '/places': (context) => const Places(),
-        '/places/add': (context) => const PlacesAdd(),
+        '/places/add': (context) => PlacesAdd(coord: coord),
       },
     );
   }

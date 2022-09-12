@@ -22,13 +22,13 @@ void _migrateInitial(Batch batch) {
   batch.execute('''CREATE TABLE Category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    description TEXT NOT NULL,
+    description TEXT NOT NULL
 )''');
   batch.execute('''CREATE TABLE Product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     price REAL NOT NULL,
     name TEXT NOT NULL,
-    description TEXT NOT NULL,
+    description TEXT NOT NULL
 )''');
   batch.execute('CREATE INDEX idx_product_price ON Product (price)');
   batch.execute('''CREATE TABLE CategoryRel (

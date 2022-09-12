@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_maps_webservice/places.dart';
 
 class Places extends StatefulWidget {
   const Places({super.key});
@@ -31,23 +34,46 @@ class _PlacesState extends State<Places> {
 }
 
 class PlacesAdd extends StatefulWidget {
-  const PlacesAdd({super.key});
+  LatLng? coord;
+
+  PlacesAdd({super.key, required this.coord});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
+  LatLng? coord;
   List<String> places = [];
 
   @override
   void initState() {
     super.initState();
-    // places =
   }
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      coord = widget.coord;
+    });
+
+    debugPrint("ZZZ: ${widget.coord}");
+    if(widget.coord != null) {
+      final mapsPlaces = GoogleMapsPlaces( // TODO: Don't call every time.
+          apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
+      mapsPlaces.searchNearbyWithRankBy(
+          Location(lat: coord!.latitude, lng: coord!.longitude), "distance")
+          .then((PlacesSearchResponse response) {
+            var results = response.results.map((r) => r.name).toList(growable: false);
+            debugPrint("XXX: ${results.length}");
+            setState(() {
+              places = results;
+            });
+      }).catchError((x) {
+        debugPrint("YYY: $x");
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
