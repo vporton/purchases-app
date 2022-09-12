@@ -30,9 +30,11 @@ class MyAppState extends State<MyApp> {
   }
 
   void onMove(LatLng coord) {
-    setState(() {
-      this.coord = coord;
-    });
+    if (coord != this.coord) {
+      setState(() {
+        this.coord = coord;
+      });
+    }
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -42,9 +44,24 @@ class PlacesAdd extends StatefulWidget {
   State<PlacesAdd> createState() => _PlacesAddState();
 }
 
+class _PlaceData {
+  String placeId;
+  String name;
+  LatLng location;
+  Uri icon;
+
+  // TODO: business_status == "OPERATIONAL"
+
+  _PlaceData(
+      {required this.placeId,
+      required this.name,
+      required this.location,
+      required this.icon});
+}
+
 class _PlacesAddState extends State<PlacesAdd> {
   LatLng? coord;
-  List<String> places = [];
+  List<_PlaceData> places = [];
 
   @override
   void initState() {
@@ -53,25 +70,30 @@ class _PlacesAddState extends State<PlacesAdd> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      coord = widget.coord;
-    });
-
-    debugPrint("ZZZ: ${widget.coord}");
-    if(widget.coord != null) {
-      final mapsPlaces = GoogleMapsPlaces( // TODO: Don't call every time.
-          apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
-      mapsPlaces.searchNearbyWithRankBy(
-          Location(lat: coord!.latitude, lng: coord!.longitude), "distance")
-          .then((PlacesSearchResponse response) {
-            var results = response.results.map((r) => r.name).toList(growable: false);
-            debugPrint("XXX: ${results.length}");
-            setState(() {
-              places = results;
-            });
-      }).catchError((x) {
-        debugPrint("YYY: $x");
+    if (widget.coord != coord) {
+      setState(() {
+        coord = widget.coord;
       });
+
+      debugPrint("ZZZ: ${widget.coord}");
+      if (widget.coord != null) {
+        final mapsPlaces = GoogleMapsPlaces(
+            // TODO: Don't call every time.
+            apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
+        mapsPlaces
+            .searchNearbyWithRadius(
+                Location(lat: coord!.latitude, lng: coord!.longitude), 2500)
+            .then((PlacesSearchResponse response) {
+          var results =
+              response.results.map((r) => _PlaceData(placeId: r.placeId, name: r.name, location: LatLng(r.geometry.location?.lat!, r.geometry.location?.lng!), icon: Uri.parse(r.icon))).toList(growable: false);
+          debugPrint("XXX: ${results.length}");
+          setState(() {
+            places = results;
+          });
+        }).catchError((x) {
+          debugPrint("YYY: $x");
+        });
+      }
     }
 
     return Scaffold(
@@ -88,8 +110,13 @@ class _PlacesAddState extends State<PlacesAdd> {
             hintText: 'address',
           ),
         ),
-        Expanded(child: // TODO: Is Expanded correct here?
-          ListView(children: places.map((e) => Text(e)).toList(growable: false)),
+        Expanded(
+          child: // TODO: Is Expanded correct here?
+              ListView(
+                  children:
+                      places.map((e) =>
+                          Text(e.name)).toList(growable: false)
+              ),
         ),
       ]),
     );

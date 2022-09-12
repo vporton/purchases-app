@@ -33,11 +33,13 @@ class MyMapState extends State<MyMap> {
         // userLocation = null;
       } else {
         var loc = LatLng(currentLocation.latitude!, currentLocation.longitude!);
-        setState(() {
-          userLocation = loc;
-        });
-        if(widget.onMove != null) {
-          widget.onMove!(loc);
+        if(loc != userLocation) {
+          setState(() {
+            userLocation = loc;
+          });
+          if (widget.onMove != null) {
+            widget.onMove!(loc);
+          }
         }
       }
     });
