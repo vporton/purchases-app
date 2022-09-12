@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -49,6 +50,7 @@ var _migrations = [
 Future<Database> myOpenDatabase() async {
   var databasesPath = await getDatabasesPath();
   var path = join(databasesPath, 'products.db');
+  debugPrint("Database path: $path");
 
   // Make sure the directory exists
   try {
