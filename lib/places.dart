@@ -87,7 +87,7 @@ class _PlacesAddState extends State<PlacesAdd> {
                     placeId: r.placeId,
                     name: r.name,
                     location: LatLng(
-                        r.geometry?.location?.lat as double, r.geometry?.location?.lng as double),
+                        r.geometry?.location.lat as double, r.geometry?.location.lng as double),
                     icon: Uri.parse(r.icon!),
                   ))
               .toList(growable: false);
