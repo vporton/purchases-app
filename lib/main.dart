@@ -36,6 +36,7 @@ class MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const MyHomePage(title: 'Purchases App'),
         '/places': (context) => const Places(),
+        '/places/add': (context) => const PlacesAdd(),
       },
     );
   }
