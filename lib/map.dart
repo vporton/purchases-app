@@ -6,6 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class MyMap extends StatefulWidget {
+  const MyMap({super.key});
+
   @override
   State<MyMap> createState() => MyMapState();
 }

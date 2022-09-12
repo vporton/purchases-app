@@ -41,6 +41,12 @@ class _PlacesAddState extends State<PlacesAdd> {
   List<String> places = [];
 
   @override
+  void initState() {
+    super.initState();
+    // places =
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
