@@ -74,7 +74,6 @@ class _PlacesAddState extends State<PlacesAdd> {
         coord = widget.coord;
       });
 
-      debugPrint("ZZZ: ${widget.coord}");
       if (widget.coord != null) {
         final mapsPlaces = GoogleMapsPlaces(
             // TODO: Don't call every time.
@@ -88,16 +87,15 @@ class _PlacesAddState extends State<PlacesAdd> {
                     placeId: r.placeId,
                     name: r.name,
                     location: LatLng(
-                        r?.geometry?.location?.lat as double, r?.geometry?.location?.lng as double),
+                        r.geometry?.location?.lat as double, r.geometry?.location?.lng as double),
                     icon: Uri.parse(r.icon!),
                   ))
               .toList(growable: false);
-          debugPrint("XXX: ${results.length}");
           setState(() {
             places = results;
           });
-        }).catchError((x) {
-          debugPrint("YYY: $x");
+        }).catchError((e) {
+          debugPrint("Error reading Google: $e");
         });
       }
     }
