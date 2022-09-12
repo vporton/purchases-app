@@ -6,7 +6,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class MyMap extends StatefulWidget {
-  const MyMap({super.key});
+  MyMap({super.key, this.onMove});
+
+  final Function(LatLng)? onMove;
 
   @override
   State<MyMap> createState() => MyMapState();
@@ -30,9 +32,13 @@ class MyMapState extends State<MyMap> {
       if(currentLocation.latitude == null || currentLocation.longitude == null) {
         // userLocation = null;
       } else {
+        var loc = LatLng(currentLocation.latitude!, currentLocation.longitude!);
         setState(() {
-          userLocation = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          userLocation = loc;
         });
+        if(widget.onMove != null) {
+          widget.onMove!(loc);
+        }
       }
     });
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:purchases/map.dart';
 import 'package:purchases/places.dart';
 import 'package:sqflite/sqflite.dart';
@@ -18,11 +19,18 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   Database? db;
+  LatLng? coord;
 
   @override
   void initState() {
     super.initState();
     myOpenDatabase().then((db) => setState(() { this.db = db; }));
+  }
+
+  void onMove(LatLng coord) {
+    setState(() {
+      this.coord = coord;
+    });
   }
 
   @override
@@ -34,7 +42,9 @@ class MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => const MyHomePage(title: 'Purchases App'),
+        '/': (context) => MyHomePage(
+            title: 'Purchases App',
+            onMove: onMove),
         '/places': (context) => const Places(),
         '/places/add': (context) => const PlacesAdd(),
       },
@@ -44,9 +54,16 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.title, this.onMove});
 
   final String title;
+  final Function(LatLng)? onMove;
+
+  void onMoveImpl(LatLng coord) {
+    if(onMove != null) {
+      onMove!(coord);
+    }
+  }
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -68,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ]),
       ),
       body: Center(
-        child: MyMap(),
+        child: MyMap(onMove: widget.onMoveImpl),
       ),
     );
   }
