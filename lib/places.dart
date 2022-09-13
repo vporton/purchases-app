@@ -36,49 +36,54 @@ class _PlacesState extends State<Places> {
 }
 
 class PlacesAdd extends StatefulWidget {
-  Database? db;
+  Database? db; // TODO: unneeded.
   LatLng? coord;
+  final void Function(PlaceData) onChoosePlace;
 
-  PlacesAdd({super.key, required this.db, required this.coord});
+  PlacesAdd(
+      {super.key,
+      required this.db,
+      required this.coord,
+      required this.onChoosePlace});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
 }
 
-class _PlaceData {
+class PlaceData {
   final String placeId;
-  final String name;
+  String name;
+  String description;
   final LatLng location;
   final Uri icon;
 
   // TODO: business_status == "OPERATIONAL"
 
-  _PlaceData({required this.placeId,
-    required this.name,
-    required this.location,
-    required this.icon});
+  PlaceData(
+      {required this.placeId,
+      required this.name,
+      required this.description,
+      required this.location,
+      required this.icon});
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
   LatLng? coord;
-  List<_PlaceData> places = [];
+  List<PlaceData> places = [];
 
   @override
   void initState() {
     super.initState();
   }
 
-  void Function() onChoosePlace(_PlaceData place) {
-    return () => {
-    widget.db.insert('Place', {
-    'google_id': place.placeId,
-    'name': place.name,
-    'description': "", // TODO
-    'lat': place.location.latitude,
-    'lng': place.location.longitude,
-    })
-        .then((c) => {});
-  };}
+  // FIXME: Don't insert on simple tap.
+  void Function() onChoosePlaceImpl(PlaceData place, BuildContext context) {
+    return () {
+      // Below warrants `widget.db != null`.
+      widget.onChoosePlace(place);
+      Navigator.pushNamed(context, '/places/add/form').then((value) {});
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,24 +92,26 @@ class _PlacesAddState extends State<PlacesAdd> {
         coord = widget.coord;
       });
 
-      if (widget.coord != null) {
+      // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
+      if (widget.coord != null && widget.db != null) {
         final mapsPlaces = GoogleMapsPlaces(
-          // TODO: Don't call every time.
+            // TODO: Don't call every time.
             apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
         mapsPlaces
             .searchNearbyWithRadius(
-            Location(lat: coord!.latitude, lng: coord!.longitude), 2500)
+                Location(
+                    lat: widget.coord!.latitude, lng: widget.coord!.longitude),
+                2500)
             .then((PlacesSearchResponse response) {
           var results = response.results
-              .map((r) =>
-              _PlaceData(
-                placeId: r.placeId,
-                name: r.name,
-                location: LatLng(
-                    r.geometry?.location.lat as double,
-                    r.geometry?.location.lng as double),
-                icon: Uri.parse(r.icon!),
-              ))
+              .map((r) => PlaceData(
+                    placeId: r.placeId,
+                    name: r.name,
+                    description: "",
+                    location: LatLng(r.geometry?.location.lat as double,
+                        r.geometry?.location.lng as double),
+                    icon: Uri.parse(r.icon!),
+                  ))
               .toList(growable: false);
           setState(() {
             places = results;
@@ -132,21 +139,86 @@ class _PlacesAddState extends State<PlacesAdd> {
         Expanded(
           // TODO: Is Expanded correct here?
           child: ListView.separated(
-            separatorBuilder: (context, index) =>
-            const Divider(
+            separatorBuilder: (context, index) => const Divider(
               color: Colors.black45,
             ),
             itemCount: places.length,
-            itemBuilder: (context, index) =>
-                InkWell(
-                    onTap: onChoosePlace(places[index]),
-                    child: Row(children: [
-                      Image.network(places[index].icon.toString(), scale: 2.0),
-                      Text(places[index].name, textScaleFactor: 2.0)
-                    ])),
+            itemBuilder: (context, index) => InkWell(
+                onTap: onChoosePlaceImpl(places[index], context),
+                child: Row(children: [
+                  Image.network(places[index].icon.toString(), scale: 2.0),
+                  Text(places[index].name, textScaleFactor: 2.0)
+                ])),
           ),
         )
       ]),
     );
+  }
+}
+
+class PlacesAddForm extends StatefulWidget {
+  final Database? db;
+  final PlaceData? place;
+
+  const PlacesAddForm({super.key, required this.db, required this.place});
+
+  @override
+  State<PlacesAddForm> createState() => _PlacesAddFormState();
+}
+
+class _PlacesAddFormState extends State<PlacesAddForm> {
+  PlaceData? place;
+
+  void saveState(BuildContext context) {
+    widget.db!.insert('Place', {
+      'google_id': place!.placeId,
+      'name': place!.name,
+      'description': place!.description,
+      'uri_icon': place!.icon.toString(),
+      'lat': place!.location.latitude,
+      'lng': place!.location.longitude,
+    }).then((c) => {});
+
+    Navigator.pushNamed(context, '/').then((value) {}); // TODO: to where navigate?
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    setState(() {
+      place = widget.place;
+    });
+
+    return Column(children: [
+      Column(children: [
+        const Text("Place name:*"),
+        TextField(onChanged: (value) {
+          setState(() {
+            place?.name = value;
+          });
+        })
+      ]),
+      Column(
+        children: [
+          const Text("Description:*"),
+          TextField(onChanged: (value) {
+            setState(() {
+              place?.description = value;
+            });
+          })
+        ],
+      ),
+      Row(
+        children: [
+          ElevatedButton(
+            onPressed: () => saveState(context), // passing false
+            child: const Text('OK'),
+          ),
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context, false), // passing false
+            child: const Text('Cancel'),
+          ),
+        ]
+      ),
+    ]);
   }
 }

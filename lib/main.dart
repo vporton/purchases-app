@@ -22,6 +22,7 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   Database? db;
   LatLng? coord;
+  PlaceData? currentPlaceData; // for editing place
 
   @override
   void initState() {
@@ -37,6 +38,10 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  void onChoosePlace(PlaceData place) {
+    currentPlaceData = place;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,7 +55,8 @@ class MyAppState extends State<MyApp> {
             title: 'Purchases App',
             onMove: onMove),
         '/places': (context) => const Places(),
-        '/places/add': (context) => PlacesAdd(coord: coord, db: db),
+        '/places/add': (context) => PlacesAdd(coord: coord, db: db, onChoosePlace: onChoosePlace),
+        '/places/add/form': (context) => PlacesAddForm(db: db, place: currentPlaceData),
       },
     );
   }
