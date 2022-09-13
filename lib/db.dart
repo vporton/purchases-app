@@ -15,6 +15,7 @@ void _migrateInitial(Batch batch) {
     google_id TEXT NOT NULL,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
+    icon_url TEXT NOT NULL,
     lat REAL NOT NULL,
     lng REAL NOT NULL
 )''');
