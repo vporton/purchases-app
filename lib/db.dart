@@ -18,7 +18,7 @@ void _migrateInitial(Batch batch) {
     lat REAL NOT NULL,
     lng REAL NOT NULL
 )''');
-  batch.execute('CREATE INDEX idx_place_google_id ON Place (google_id)');
+  batch.execute('CREATE UNIQUE INDEX idx_place_google_id ON Place (google_id)');
   batch.execute('''CREATE TABLE Category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
