@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Places extends StatefulWidget {
   const Places({super.key});
@@ -35,9 +36,10 @@ class _PlacesState extends State<Places> {
 }
 
 class PlacesAdd extends StatefulWidget {
+  Database? db;
   LatLng? coord;
 
-  PlacesAdd({super.key, required this.coord});
+  PlacesAdd({super.key, required this.db, required this.coord});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
@@ -51,11 +53,10 @@ class _PlaceData {
 
   // TODO: business_status == "OPERATIONAL"
 
-  _PlaceData(
-      {required this.placeId,
-      required this.name,
-      required this.location,
-      required this.icon});
+  _PlaceData({required this.placeId,
+    required this.name,
+    required this.location,
+    required this.icon});
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
@@ -67,6 +68,18 @@ class _PlacesAddState extends State<PlacesAdd> {
     super.initState();
   }
 
+  void Function() onChoosePlace(_PlaceData place) {
+    return () => {
+    widget.db.insert('Place', {
+    'google_id': place.placeId,
+    'name': place.name,
+    'description': "", // TODO
+    'lat': place.location.latitude,
+    'lng': place.location.longitude,
+    })
+        .then((c) => {});
+  };}
+
   @override
   Widget build(BuildContext context) {
     if (widget.coord != coord) {
@@ -76,20 +89,22 @@ class _PlacesAddState extends State<PlacesAdd> {
 
       if (widget.coord != null) {
         final mapsPlaces = GoogleMapsPlaces(
-            // TODO: Don't call every time.
+          // TODO: Don't call every time.
             apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
         mapsPlaces
             .searchNearbyWithRadius(
-                Location(lat: coord!.latitude, lng: coord!.longitude), 2500)
+            Location(lat: coord!.latitude, lng: coord!.longitude), 2500)
             .then((PlacesSearchResponse response) {
           var results = response.results
-              .map((r) => _PlaceData(
-                    placeId: r.placeId,
-                    name: r.name,
-                    location: LatLng(
-                        r.geometry?.location.lat as double, r.geometry?.location.lng as double),
-                    icon: Uri.parse(r.icon!),
-                  ))
+              .map((r) =>
+              _PlaceData(
+                placeId: r.placeId,
+                name: r.name,
+                location: LatLng(
+                    r.geometry?.location.lat as double,
+                    r.geometry?.location.lng as double),
+                icon: Uri.parse(r.icon!),
+              ))
               .toList(growable: false);
           setState(() {
             places = results;
@@ -117,14 +132,18 @@ class _PlacesAddState extends State<PlacesAdd> {
         Expanded(
           // TODO: Is Expanded correct here?
           child: ListView.separated(
-            separatorBuilder: (context, index) => const Divider(
+            separatorBuilder: (context, index) =>
+            const Divider(
               color: Colors.black45,
             ),
             itemCount: places.length,
-            itemBuilder: (context, index) => Row(children: [
-              Image.network(places[index].icon.toString(), scale: 2.0),
-              Text(places[index].name, textScaleFactor: 2.0)
-            ]),
+            itemBuilder: (context, index) =>
+                InkWell(
+                    onTap: onChoosePlace(places[index]),
+                    child: Row(children: [
+                      Image.network(places[index].icon.toString(), scale: 2.0),
+                      Text(places[index].name, textScaleFactor: 2.0)
+                    ])),
           ),
         )
       ]),

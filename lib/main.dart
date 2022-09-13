@@ -50,7 +50,7 @@ class MyAppState extends State<MyApp> {
             title: 'Purchases App',
             onMove: onMove),
         '/places': (context) => const Places(),
-        '/places/add': (context) => PlacesAdd(coord: coord),
+        '/places/add': (context) => PlacesAdd(coord: coord, db: db),
       },
     );
   }
