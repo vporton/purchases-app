@@ -136,7 +136,9 @@ class _PlacesAddState extends State<PlacesAdd> {
             hintText: 'address',
           ),
         ),
-        Expanded(child: _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl)),
+        Expanded(
+            child:
+                _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl)),
       ]),
     );
   }
@@ -201,36 +203,43 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
       place = widget.place;
     });
 
-    return Column(children: [
-      Column(children: [
-        const Text("Place name:*"),
-        TextField(onChanged: (value) {
-          setState(() {
-            place?.name = value;
-          });
-        })
-      ]),
-      Column(
-        children: [
-          const Text("Description:*"),
-          TextField(onChanged: (value) {
-            setState(() {
-              place?.description = value;
-            });
-          })
-        ],
-      ),
-      Row(children: [
-        ElevatedButton(
-          onPressed: () => saveState(context), // passing false
-          child: const Text('OK'),
+    return Scaffold(
+        appBar: AppBar(
+          leading: InkWell(
+              child: const Icon(Icons.arrow_circle_left),
+              onTap: () => Navigator.pop(context)),
+          title: const Text("Saved Places"),
         ),
-        OutlinedButton(
-          onPressed: () => Navigator.pop(context, false), // passing false
-          child: const Text('Cancel'),
-        ),
-      ]),
-    ]);
+        body: Column(children: [
+          Column(children: [
+            const Text("Place name:*"),
+            TextField(onChanged: (value) {
+              setState(() {
+                place?.name = value;
+              });
+            })
+          ]),
+          Column(
+            children: [
+              const Text("Description:*"),
+              TextField(onChanged: (value) {
+                setState(() {
+                  place?.description = value;
+                });
+              })
+            ],
+          ),
+          Row(children: [
+            ElevatedButton(
+              onPressed: () => saveState(context), // passing false
+              child: const Text('OK'),
+            ),
+            OutlinedButton(
+              onPressed: () => Navigator.pop(context, false), // passing false
+              child: const Text('Cancel'),
+            ),
+          ]),
+        ]));
   }
 }
 
