@@ -162,7 +162,7 @@ class _PlacesList extends StatelessWidget {
                 onTap: () { onChoosePlace(places[index], context); },
                 child: Row(children: [
                   Image.network(places[index].icon.toString(), scale: 2.0),
-                  Text(places[index].name, textScaleFactor: 2.0)
+                  Text(places[index].name, textScaleFactor: 2.0),
                 ])),
       ),
     );
