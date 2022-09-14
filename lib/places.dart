@@ -40,10 +40,11 @@ class PlacesAdd extends StatefulWidget {
   LatLng? coord;
   final void Function(PlaceData) onChoosePlace;
 
-  PlacesAdd({super.key,
-    required this.db,
-    required this.coord,
-    required this.onChoosePlace});
+  PlacesAdd(
+      {super.key,
+      required this.db,
+      required this.coord,
+      required this.onChoosePlace});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
@@ -58,11 +59,12 @@ class PlaceData {
 
   // TODO: business_status == "OPERATIONAL"
 
-  PlaceData({required this.placeId,
-    required this.name,
-    required this.description,
-    required this.location,
-    required this.icon});
+  PlaceData(
+      {required this.placeId,
+      required this.name,
+      required this.description,
+      required this.location,
+      required this.icon});
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
@@ -75,12 +77,12 @@ class _PlacesAddState extends State<PlacesAdd> {
   }
 
   // FIXME: Don't insert on simple tap.
-  void Function() onChoosePlaceImpl(PlaceData place, BuildContext context) {
-    return () {
-      // Below warrants `widget.db != null`.
-      widget.onChoosePlace(place);
-      Navigator.pushNamed(context, '/places/add/form').then((value) {});
-    };
+  void onChoosePlaceImpl(PlaceData place, BuildContext context) {
+    // Below warrants `widget.db != null`.
+    debugPrint("AAA");
+    widget.onChoosePlace(place);
+    debugPrint("ZZZ");
+    Navigator.pushNamed(context, '/places/add/form').then((value) {});
   }
 
   @override
@@ -93,24 +95,23 @@ class _PlacesAddState extends State<PlacesAdd> {
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
       if (widget.coord != null && widget.db != null) {
         final mapsPlaces = GoogleMapsPlaces(
-          // TODO: Don't call every time.
+            // TODO: Don't call every time.
             apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
         mapsPlaces
             .searchNearbyWithRadius(
-            Location(
-                lat: widget.coord!.latitude, lng: widget.coord!.longitude),
-            2500)
+                Location(
+                    lat: widget.coord!.latitude, lng: widget.coord!.longitude),
+                2500)
             .then((PlacesSearchResponse response) {
           var results = response.results
-              .map((r) =>
-              PlaceData(
-                placeId: r.placeId,
-                name: r.name,
-                description: "",
-                location: LatLng(r.geometry?.location.lat as double,
-                    r.geometry?.location.lng as double),
-                icon: Uri.parse(r.icon!),
-              ))
+              .map((r) => PlaceData(
+                    placeId: r.placeId,
+                    name: r.name,
+                    description: "",
+                    location: LatLng(r.geometry?.location.lat as double,
+                        r.geometry?.location.lng as double),
+                    icon: Uri.parse(r.icon!),
+                  ))
               .toList(growable: false);
           setState(() {
             places = results;
@@ -152,22 +153,22 @@ class _PlacesList extends StatelessWidget {
     return Expanded(
       // TODO: Is Expanded correct here?
       child: ListView.separated(
-        separatorBuilder: (context, index) =>
-        const Divider(
+        separatorBuilder: (context, index) => const Divider(
           color: Colors.black45,
         ),
         itemCount: places.length,
-        itemBuilder: (context, index) =>
-            InkWell(
-                onTap: () { onChoosePlace(places[index], context); },
-                child: Row(children: [
-                  Image.network(places[index].icon.toString(), scale: 2.0),
-                  Text(places[index].name, textScaleFactor: 2.0),
-                ])),
+        itemBuilder: (context, index) => InkWell(
+            onTap: () {
+              debugPrint("XXX");
+              onChoosePlace(places[index], context);
+            },
+            child: Row(children: [
+              Image.network(places[index].icon.toString(), scale: 2.0),
+              Text(places[index].name, textScaleFactor: 2.0),
+            ])),
       ),
     );
   }
-
 }
 
 class PlacesAddForm extends StatefulWidget {
@@ -193,8 +194,8 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
       'lng': place!.location.longitude,
     }).then((c) => {});
 
-    Navigator.pushNamed(context, '/').then((
-        value) {}); // TODO: to where navigate?
+    Navigator.pushNamed(context, '/')
+        .then((value) {}); // TODO: to where navigate?
   }
 
   @override
@@ -222,18 +223,16 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
           })
         ],
       ),
-      Row(
-          children: [
-            ElevatedButton(
-              onPressed: () => saveState(context), // passing false
-              child: const Text('OK'),
-            ),
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context, false), // passing false
-              child: const Text('Cancel'),
-            ),
-          ]
-      ),
+      Row(children: [
+        ElevatedButton(
+          onPressed: () => saveState(context), // passing false
+          child: const Text('OK'),
+        ),
+        OutlinedButton(
+          onPressed: () => Navigator.pop(context, false), // passing false
+          child: const Text('Cancel'),
+        ),
+      ]),
     ]);
   }
 }
