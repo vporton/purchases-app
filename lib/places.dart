@@ -40,11 +40,10 @@ class PlacesAdd extends StatefulWidget {
   LatLng? coord;
   final void Function(PlaceData) onChoosePlace;
 
-  PlacesAdd(
-      {super.key,
-      required this.db,
-      required this.coord,
-      required this.onChoosePlace});
+  PlacesAdd({super.key,
+    required this.db,
+    required this.coord,
+    required this.onChoosePlace});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
@@ -59,12 +58,11 @@ class PlaceData {
 
   // TODO: business_status == "OPERATIONAL"
 
-  PlaceData(
-      {required this.placeId,
-      required this.name,
-      required this.description,
-      required this.location,
-      required this.icon});
+  PlaceData({required this.placeId,
+    required this.name,
+    required this.description,
+    required this.location,
+    required this.icon});
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
@@ -95,23 +93,24 @@ class _PlacesAddState extends State<PlacesAdd> {
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
       if (widget.coord != null && widget.db != null) {
         final mapsPlaces = GoogleMapsPlaces(
-            // TODO: Don't call every time.
+          // TODO: Don't call every time.
             apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
         mapsPlaces
             .searchNearbyWithRadius(
-                Location(
-                    lat: widget.coord!.latitude, lng: widget.coord!.longitude),
-                2500)
+            Location(
+                lat: widget.coord!.latitude, lng: widget.coord!.longitude),
+            2500)
             .then((PlacesSearchResponse response) {
           var results = response.results
-              .map((r) => PlaceData(
-                    placeId: r.placeId,
-                    name: r.name,
-                    description: "",
-                    location: LatLng(r.geometry?.location.lat as double,
-                        r.geometry?.location.lng as double),
-                    icon: Uri.parse(r.icon!),
-                  ))
+              .map((r) =>
+              PlaceData(
+                placeId: r.placeId,
+                name: r.name,
+                description: "",
+                location: LatLng(r.geometry?.location.lat as double,
+                    r.geometry?.location.lng as double),
+                icon: Uri.parse(r.icon!),
+              ))
               .toList(growable: false);
           setState(() {
             places = results;
@@ -136,24 +135,39 @@ class _PlacesAddState extends State<PlacesAdd> {
             hintText: 'address',
           ),
         ),
-        Expanded(
-          // TODO: Is Expanded correct here?
-          child: ListView.separated(
-            separatorBuilder: (context, index) => const Divider(
-              color: Colors.black45,
-            ),
-            itemCount: places.length,
-            itemBuilder: (context, index) => InkWell(
-                onTap: onChoosePlaceImpl(places[index], context),
+        _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl),
+      ]),
+    );
+  }
+}
+
+class _PlacesList extends StatelessWidget {
+  List<PlaceData> places;
+  void Function(PlaceData place, BuildContext context) onChoosePlace;
+
+  _PlacesList({required this.places, required this.onChoosePlace});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      // TODO: Is Expanded correct here?
+      child: ListView.separated(
+        separatorBuilder: (context, index) =>
+        const Divider(
+          color: Colors.black45,
+        ),
+        itemCount: places.length,
+        itemBuilder: (context, index) =>
+            InkWell(
+                onTap: () { onChoosePlace(places[index], context); },
                 child: Row(children: [
                   Image.network(places[index].icon.toString(), scale: 2.0),
                   Text(places[index].name, textScaleFactor: 2.0)
                 ])),
-          ),
-        )
-      ]),
+      ),
     );
   }
+
 }
 
 class PlacesAddForm extends StatefulWidget {
@@ -179,7 +193,8 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
       'lng': place!.location.longitude,
     }).then((c) => {});
 
-    Navigator.pushNamed(context, '/').then((value) {}); // TODO: to where navigate?
+    Navigator.pushNamed(context, '/').then((
+        value) {}); // TODO: to where navigate?
   }
 
   @override
@@ -208,17 +223,47 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
         ],
       ),
       Row(
-        children: [
-          ElevatedButton(
-            onPressed: () => saveState(context), // passing false
-            child: const Text('OK'),
-          ),
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context, false), // passing false
-            child: const Text('Cancel'),
-          ),
-        ]
+          children: [
+            ElevatedButton(
+              onPressed: () => saveState(context), // passing false
+              child: const Text('OK'),
+            ),
+            OutlinedButton(
+              onPressed: () => Navigator.pop(context, false), // passing false
+              child: const Text('Cancel'),
+            ),
+          ]
       ),
     ]);
+  }
+}
+
+class SavedPlaces extends StatelessWidget {
+  final Database? db;
+  final void Function(PlaceData place) onChoosePlace;
+
+  const SavedPlaces({super.key, required this.db, required this.onChoosePlace});
+
+  @override
+  Widget build(BuildContext context) {
+    var places;
+
+    void Function() onChoosePlaceImpl(PlaceData place, BuildContext context) {
+      return () {
+        // Below warrants `widget.db != null`.
+        onChoosePlace(place);
+        Navigator.pushNamed(context, '/places/add/form').then((value) {});
+      };
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: InkWell(
+            child: const Icon(Icons.arrow_circle_left),
+            onTap: () => Navigator.pop(context)),
+        title: const Text("Add Place"),
+      ),
+      body: _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl),
+    );
   }
 }

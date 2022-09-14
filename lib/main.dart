@@ -55,6 +55,7 @@ class MyAppState extends State<MyApp> {
             title: 'Purchases App',
             onMove: onMove),
         '/places': (context) => const Places(),
+        '/places/saved': (context) => SavedPlaces(db: db, onChoosePlace: onChoosePlace),
         '/places/add': (context) => PlacesAdd(coord: coord, db: db, onChoosePlace: onChoosePlace),
         '/places/add/form': (context) => PlacesAddForm(db: db, place: currentPlaceData),
       },
