@@ -136,7 +136,7 @@ class _PlacesAddState extends State<PlacesAdd> {
             hintText: 'address',
           ),
         ),
-        _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl),
+        Expanded(child: _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl)),
       ]),
     );
   }
@@ -150,23 +150,20 @@ class _PlacesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      // TODO: Is Expanded correct here?
-      child: ListView.separated(
-        separatorBuilder: (context, index) => const Divider(
-          color: Colors.black45,
-        ),
-        itemCount: places.length,
-        itemBuilder: (context, index) => InkWell(
-            onTap: () {
-              debugPrint("XXX");
-              onChoosePlace(places[index], context);
-            },
-            child: Row(children: [
-              Image.network(places[index].icon.toString(), scale: 2.0),
-              Text(places[index].name, textScaleFactor: 2.0),
-            ])),
+    return ListView.separated(
+      separatorBuilder: (context, index) => const Divider(
+        color: Colors.black45,
       ),
+      itemCount: places.length,
+      itemBuilder: (context, index) => InkWell(
+          onTap: () {
+            debugPrint("XXX");
+            onChoosePlace(places[index], context);
+          },
+          child: Row(children: [
+            Image.network(places[index].icon.toString(), scale: 2.0),
+            Text(places[index].name, textScaleFactor: 2.0),
+          ])),
     );
   }
 }
