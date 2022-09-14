@@ -143,7 +143,7 @@ class _PlacesAddState extends State<PlacesAdd> {
 }
 
 class _PlacesList extends StatelessWidget {
-  List<PlaceData> places;
+  final List<PlaceData> places;
   void Function(PlaceData place, BuildContext context) onChoosePlace;
 
   _PlacesList({required this.places, required this.onChoosePlace});
@@ -237,22 +237,44 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
   }
 }
 
-class SavedPlaces extends StatelessWidget {
+class SavedPlaces extends StatefulWidget {
   final Database? db;
   final void Function(PlaceData place) onChoosePlace;
 
   const SavedPlaces({super.key, required this.db, required this.onChoosePlace});
 
   @override
-  Widget build(BuildContext context) {
-    var places;
+  State<StatefulWidget> createState() => _SavedPlacesState();
+}
 
+class _SavedPlacesState extends State<SavedPlaces> {
+  @override
+  Widget build(BuildContext context) {
     void Function() onChoosePlaceImpl(PlaceData place, BuildContext context) {
       return () {
         // Below warrants `widget.db != null`.
-        onChoosePlace(place);
+        widget.onChoosePlace(place);
         Navigator.pushNamed(context, '/places/add/form').then((value) {});
       };
+    }
+
+    List<PlaceData> places = [];
+    if (widget.db != null) {
+      widget.db!
+          .query('Places', columns: [], orderBy: 'name')
+          .then((result) => {
+                setState(() {
+                  places = result
+                      .map((row) => PlaceData(
+                          placeId: row['google_id'] as String,
+                          name: row['name'] as String,
+                          description: row['description'] as String,
+                          location: LatLng(row['latitude'] as double,
+                              row['longitude'] as double),
+                          icon: Uri.parse(row['icon_url'] as String)))
+                      .toList(growable: false);
+                })
+              });
     }
 
     return Scaffold(
@@ -260,7 +282,7 @@ class SavedPlaces extends StatelessWidget {
         leading: InkWell(
             child: const Icon(Icons.arrow_circle_left),
             onTap: () => Navigator.pop(context)),
-        title: const Text("Add Place"),
+        title: const Text("Saved Places"),
       ),
       body: _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl),
     );
