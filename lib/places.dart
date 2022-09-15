@@ -213,11 +213,13 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
         body: Column(children: [
           Column(children: [
             const Text("Place name:*"),
-            TextField(onChanged: (value) {
-              setState(() {
-                place?.name = value;
-              });
-            })
+            TextField(
+                controller: TextEditingController(text: place!.name),
+                onChanged: (value) {
+                  setState(() {
+                    place?.name = value;
+                  });
+                })
           ]),
           Column(
             children: [
