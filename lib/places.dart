@@ -79,9 +79,7 @@ class _PlacesAddState extends State<PlacesAdd> {
   // FIXME: Don't insert on simple tap.
   void onChoosePlaceImpl(PlaceData place, BuildContext context) {
     // Below warrants `widget.db != null`.
-    debugPrint("AAA");
     widget.onChoosePlace(place);
-    debugPrint("ZZZ");
     Navigator.pushNamed(context, '/places/add/form').then((value) {});
   }
 
@@ -159,7 +157,6 @@ class _PlacesList extends StatelessWidget {
       itemCount: places.length,
       itemBuilder: (context, index) => InkWell(
           onTap: () {
-            debugPrint("XXX");
             onChoosePlace(places[index], context);
           },
           child: Row(children: [
