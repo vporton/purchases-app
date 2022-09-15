@@ -269,7 +269,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
     List<PlaceData> places = [];
     if (widget.db != null) {
       widget.db!
-          .query('Places', columns: [], orderBy: 'name')
+          .query('Place', columns: [], orderBy: 'name')
           .then((result) => {
                 setState(() {
                   places = result
