@@ -85,6 +85,8 @@ class CategoriesEdit extends StatefulWidget {
 
 class CategoriesEditState extends State<CategoriesEdit> {
   CategoryData? category;
+  TextEditingController nameTextController =  TextEditingController();
+  TextEditingController descriptionTextController = TextEditingController();
 
   void saveState(BuildContext context) {
     if (category!.id != null) {
@@ -114,6 +116,8 @@ class CategoriesEditState extends State<CategoriesEdit> {
       setState(() {
         category = widget.category ?? CategoryData(name: "", description: "");
       });
+      nameTextController.text = category!.name;
+      descriptionTextController.text = category!.description;
     }
 
     return Scaffold(
@@ -127,7 +131,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
           Column(key: const Key('name'), children: [
             const Text("Category name:*"),
             TextField(
-                controller: TextEditingController(text: category!.name),
+                controller: nameTextController,
                 onChanged: (value) {
                   setState(() {
                     category!.name = value;
@@ -137,7 +141,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
           Column(key: const Key('description'), children: [
             const Text("Description:"),
             TextField(
-                controller: TextEditingController(text: category!.description),
+                controller: descriptionTextController,
                 onChanged: (value) {
                   setState(() {
                     category!.description = value;
