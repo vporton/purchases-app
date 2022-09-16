@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(leading: const Icon(Icons.place), title: const Text("Nearby places"), onTap: () { Navigator.pushNamed(context, '/places').then((value) {}); }),
             ListTile(leading: const Icon(Icons.place), title: const Text("Saved places"), onTap: () { Navigator.pushNamed(context, '/places/saved').then((value) {}); }),
             ListTile(leading: const Icon(Icons.category), title: const Text("Product categories"), onTap: () { Navigator.pushNamed(context, '/categories').then((value) {}); }),
-            ListTile(leading: const Icon(Icons.shopping_cart), title: const Text("Products")),
+            ListTile(leading: const Icon(Icons.shopping_cart), title: const Text("Prices")),
           ]),
       ),
       body: Center(
