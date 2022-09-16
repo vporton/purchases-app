@@ -198,7 +198,9 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
       'icon_url': place!.icon.toString(),
       'lat': place!.location.latitude,
       'lng': place!.location.longitude,
-    }).then((c) => {});
+    },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    ).then((c) => {});
 
     Navigator.pushNamed(context, '/')
         .then((value) {}); // TODO: to where navigate?
