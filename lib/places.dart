@@ -69,13 +69,10 @@ class PlaceData {
 
   // FIXME: hack
   @override
-  bool operator ==(other) =>
-      other is PlaceData &&
-      placeId == other.placeId;
+  bool operator ==(other) => other is PlaceData && placeId == other.placeId;
 
   @override
   int get hashCode => placeId.hashCode;
-
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
@@ -191,16 +188,20 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
   PlaceData? place;
 
   void saveState(BuildContext context) {
-    widget.db!.insert('Place', {
-      'google_id': place!.placeId,
-      'name': place!.name,
-      'description': place!.description,
-      'icon_url': place!.icon.toString(),
-      'lat': place!.location.latitude,
-      'lng': place!.location.longitude,
-    },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    ).then((c) => {});
+    widget.db!
+        .insert(
+          'Place',
+          {
+            'google_id': place!.placeId,
+            'name': place!.name,
+            'description': place!.description,
+            'icon_url': place!.icon.toString(),
+            'lat': place!.location.latitude,
+            'lng': place!.location.longitude,
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        )
+        .then((c) => {});
 
     Navigator.pop(context);
   }
@@ -239,15 +240,14 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
               })
             ],
           ),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             ElevatedButton(
               onPressed: () => saveState(context), // passing false
               child: const Text('OK'),
             ),
             OutlinedButton(
-              onPressed: () => Navigator.pop(context, false), // passing false
+              onPressed: () => Navigator.pop(context, false),
+              // passing false
               child: const Text('Cancel'),
             ),
           ]),

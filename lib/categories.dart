@@ -30,10 +30,12 @@ class CategoriesState extends State<Categories> {
   Widget build(BuildContext context) {
     if (widget.db != null) {
       widget.db!
-          .query('Category', columns: ['name', 'description'], orderBy: 'name')
+          .query('Category',
+              columns: ['id', 'name', 'description'], orderBy: 'name')
           .then((result) => setState(() {
                 list = result
                     .map((r) => CategoryData(
+                        id: r['id'] as int,
                         name: r['name'] as String,
                         description: r['description'] as String))
                     .toList(growable: false);
@@ -55,14 +57,18 @@ class CategoriesState extends State<Categories> {
         itemBuilder: (context, index) =>
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(list[index].name, textScaleFactor: 2.0),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text("Supercategories", style: TextStyle(color: Colors.blue)),
-                Text("Subcategories", style: TextStyle(color: Colors.blue)),
-                Text("Edit", style: TextStyle(color: Colors.blue)),
-                Text("Delete", style: TextStyle(color: Colors.blue)),
-              ])
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text("Supercategories", style: TextStyle(color: Colors.blue)),
+            const Text("Subcategories", style: TextStyle(color: Colors.blue)),
+            InkWell(
+                child: const Text("Edit", style: TextStyle(color: Colors.blue)),
+                onTap: () {
+                  widget.onChooseCategory(list[index]);
+                  Navigator.pushNamed(context, '/categories/edit')
+                      .then((value) {});
+                }),
+            const Text("Delete", style: TextStyle(color: Colors.blue)),
+          ])
         ]),
       ),
       floatingActionButton: FloatingActionButton(
