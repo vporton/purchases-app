@@ -29,6 +29,7 @@ class _PlacesState extends State<Places> {
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
+            // FIXME: Reset `place` to null.
             Navigator.pushNamed(context, '/places/add').then((value) {});
           }),
     );
