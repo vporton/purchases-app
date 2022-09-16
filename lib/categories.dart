@@ -85,11 +85,27 @@ class CategoriesEdit extends StatefulWidget {
 
 class CategoriesEditState extends State<CategoriesEdit> {
   CategoryData? category;
-  // Database? db;
-  TextEditingController nametextController =  TextEditingController();
-  TextEditingController descriptionTextController = TextEditingController();
+
   void saveState(BuildContext context) {
-    // ...
+    if (category!.id != null) {
+      widget.db!
+          .update(
+              'Category',
+              {
+                'name': category!.name,
+                'description': category!.description,
+              },
+              where: "id=?",
+              whereArgs: [category!.id])
+          .then((c) => {});
+    } else {
+      widget.db!.insert('Category', {
+        'name': category!.name,
+        'description': category!.description,
+      }).then((c) => {});
+    }
+
+    Navigator.pop(context);
   }
 
   @override
@@ -98,13 +114,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
       setState(() {
         category = widget.category ?? CategoryData(name: "", description: "");
       });
-
-
     }
-    nametextController.text = category!.name??"";
-    descriptionTextController.text = category!.description??"";
-
-
 
     return Scaffold(
         appBar: AppBar(
@@ -117,7 +127,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
           Column(key: const Key('name'), children: [
             const Text("Category name:*"),
             TextField(
-                controller: nametextController,
+                controller: TextEditingController(text: category!.name),
                 onChanged: (value) {
                   setState(() {
                     category!.name = value;
@@ -127,7 +137,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
           Column(key: const Key('description'), children: [
             const Text("Description:"),
             TextField(
-                controller: descriptionTextController,
+                controller: TextEditingController(text: category!.description),
                 onChanged: (value) {
                   setState(() {
                     category!.description = value;
@@ -146,4 +156,5 @@ class CategoriesEditState extends State<CategoriesEdit> {
             ),
           ]),
         ]));
-  }}
+  }
+}
