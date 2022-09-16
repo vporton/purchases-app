@@ -86,7 +86,6 @@ class _PlacesAddState extends State<PlacesAdd> {
     super.initState();
   }
 
-  // FIXME: Don't insert on simple tap.
   void onChoosePlaceImpl(PlaceData place, BuildContext context) {
     // Below warrants `widget.db != null`.
     widget.onChoosePlace(place);
