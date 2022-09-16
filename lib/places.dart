@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:path/path.dart';
+import 'package:collection/collection.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Places extends StatefulWidget {
@@ -65,6 +65,16 @@ class PlaceData {
       required this.description,
       required this.location,
       required this.icon});
+
+  // FIXME: hack
+  @override
+  bool operator ==(other) =>
+      other is PlaceData &&
+      placeId == other.placeId;
+
+  @override
+  int get hashCode => placeId.hashCode;
+
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
@@ -253,6 +263,8 @@ class SavedPlaces extends StatefulWidget {
 }
 
 class _SavedPlacesState extends State<SavedPlaces> {
+  List<PlaceData> places = [];
+
   @override
   Widget build(BuildContext context) {
     void Function() onChoosePlaceImpl(PlaceData place, BuildContext context) {
@@ -263,7 +275,6 @@ class _SavedPlacesState extends State<SavedPlaces> {
       };
     }
 
-    List<PlaceData> places = [];
     if (widget.db != null) {
       widget.db!
           .query('Place',
@@ -276,24 +287,26 @@ class _SavedPlacesState extends State<SavedPlaces> {
                 'icon_url',
               ],
               orderBy: 'name')
-          .then((result) => {
-                setState(() {
-                  var newPlaces = result
-                      .map((row) => PlaceData(
-                          placeId: row['google_id'] as String,
-                          name: row['name'] as String,
-                          description: row['description'] as String,
-                          location: LatLng(
-                              row['lat'] as double, row['lng'] as double),
-                          icon: Uri.parse(row['icon_url'] as String)))
-                      .toList(growable: false);
-                  if (newPlaces != places) {
-                    debugPrint("NOT EQUAL");
-                    places = newPlaces;
-                  }
-                  debugPrint("PLACES: $places / $newPlaces");
-                })
-              });
+          .then((result) {
+        var newPlaces = result
+            .map((row) => PlaceData(
+                placeId: row['google_id'] as String,
+                name: row['name'] as String,
+                description: row['description'] as String,
+                location: LatLng(row['lat'] as double, row['lng'] as double),
+                icon: Uri.parse(row['icon_url'] as String)))
+            .toList(growable: false);
+        var eq = const ListEquality().equals;
+        debugPrint("places.isNotEmpty: ${places.isNotEmpty}");
+        debugPrint("newPlaces.isNotEmpty: ${newPlaces.isNotEmpty}");
+        if (!eq(newPlaces, places)) {
+          setState(() {
+            places = newPlaces;
+            debugPrint("PLACES: $places / $newPlaces");
+            debugPrint("2places.isNotEmpty: ${places.isNotEmpty}");
+          });
+        }
+      });
     }
 
     return Scaffold(
