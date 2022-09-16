@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'db.dart';
+import 'categories.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -58,6 +59,7 @@ class MyAppState extends State<MyApp> {
         '/places/saved': (context) => SavedPlaces(db: db, onChoosePlace: onChoosePlace),
         '/places/add': (context) => PlacesAdd(coord: coord, db: db, onChoosePlace: onChoosePlace),
         '/places/add/form': (context) => PlacesAddForm(db: db, place: currentPlaceData),
+        '/categories': (context) => Categories(db: db),
       },
     );
   }
@@ -90,10 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
           child: ListView(children: [
-            ListTile(leading: const Icon(Icons.place), title: Text("Nearby places"), onTap: () { Navigator.pushNamed(context, '/places').then((value) {}); }),
-            ListTile(leading: const Icon(Icons.place), title: Text("Saved Places"), onTap: () { Navigator.pushNamed(context, '/places/saved').then((value) {}); }),
-            ListTile(leading: const Icon(Icons.shopping_cart), title: Text("Products")),
-            ListTile(leading: const Icon(Icons.category), title: Text("Product categories")),
+            ListTile(leading: const Icon(Icons.place), title: const Text("Nearby places"), onTap: () { Navigator.pushNamed(context, '/places').then((value) {}); }),
+            ListTile(leading: const Icon(Icons.place), title: const Text("Saved Places"), onTap: () { Navigator.pushNamed(context, '/places/saved').then((value) {}); }),
+            ListTile(leading: const Icon(Icons.shopping_cart), title: const Text("Products")),
+            ListTile(leading: const Icon(Icons.category), title: const Text("Product categories"), onTap: () { Navigator.pushNamed(context, '/categories').then((value) {}); }),
           ]),
       ),
       body: Center(
