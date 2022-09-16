@@ -215,7 +215,7 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
           leading: InkWell(
               child: const Icon(Icons.arrow_circle_left),
               onTap: () => Navigator.pop(context)),
-          title: const Text("Saved Places"),
+          title: const Text("Edit Place"),
         ),
         body: Column(children: [
           Column(children: [
@@ -267,12 +267,10 @@ class _SavedPlacesState extends State<SavedPlaces> {
 
   @override
   Widget build(BuildContext context) {
-    void Function() onChoosePlaceImpl(PlaceData place, BuildContext context) {
-      return () {
-        // Below warrants `widget.db != null`.
-        widget.onChoosePlace(place);
-        Navigator.pushNamed(context, '/places/add/form').then((value) {});
-      };
+    void onChoosePlaceImpl(PlaceData place, BuildContext context) {
+      // Below warrants `widget.db != null`.
+      widget.onChoosePlace(place);
+      Navigator.pushNamed(context, '/places/add/form').then((value) {});
     }
 
     if (widget.db != null) {
@@ -297,13 +295,9 @@ class _SavedPlacesState extends State<SavedPlaces> {
                 icon: Uri.parse(row['icon_url'] as String)))
             .toList(growable: false);
         var eq = const ListEquality().equals;
-        debugPrint("places.isNotEmpty: ${places.isNotEmpty}");
-        debugPrint("newPlaces.isNotEmpty: ${newPlaces.isNotEmpty}");
         if (!eq(newPlaces, places)) {
           setState(() {
             places = newPlaces;
-            debugPrint("PLACES: $places / $newPlaces");
-            debugPrint("2places.isNotEmpty: ${places.isNotEmpty}");
           });
         }
       });
