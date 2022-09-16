@@ -57,9 +57,7 @@ class MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => MyHomePage(
-            title: 'Purchases App',
-            onMove: onMove),
+        '/': (context) => MyHomePage(onMove: onMove),
         '/places': (context) => const Places(),
         '/places/saved': (context) => SavedPlaces(db: db, onChoosePlace: onChoosePlace),
         '/places/add': (context) => PlacesAdd(coord: coord, db: db, onChoosePlace: onChoosePlace),
@@ -72,9 +70,8 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title, this.onMove});
+  const MyHomePage({super.key, this.onMove});
 
-  final String title;
   final Function(LatLng)? onMove;
 
   void onMoveImpl(LatLng coord) {
@@ -93,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         // leading:
-        title: Text(widget.title),
+        title: const Text("Prices app"),
       ),
       drawer: Drawer(
           child: ListView(children: [
