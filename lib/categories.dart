@@ -52,14 +52,17 @@ class CategoriesState extends State<Categories> {
           color: Colors.black45,
         ),
         itemCount: list.length,
-        itemBuilder: (context, index) => Column(children: [
+        itemBuilder: (context, index) =>
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(list[index].name, textScaleFactor: 2.0),
-          Row(children: const [
-            Text("Supercategories"),
-            Text("Subcategories"),
-            Text("Edit"),
-            Text("Delete"),
-          ])
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text("Supercategories", style: TextStyle(color: Colors.blue)),
+                Text("Subcategories", style: TextStyle(color: Colors.blue)),
+                Text("Edit", style: TextStyle(color: Colors.blue)),
+                Text("Delete", style: TextStyle(color: Colors.blue)),
+              ])
         ]),
       ),
       floatingActionButton: FloatingActionButton(
@@ -85,7 +88,7 @@ class CategoriesEdit extends StatefulWidget {
 
 class CategoriesEditState extends State<CategoriesEdit> {
   CategoryData? category;
-  TextEditingController nameTextController =  TextEditingController();
+  TextEditingController nameTextController = TextEditingController();
   TextEditingController descriptionTextController = TextEditingController();
 
   void saveState(BuildContext context) {
