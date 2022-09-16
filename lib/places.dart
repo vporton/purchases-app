@@ -240,7 +240,9 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
               })
             ],
           ),
-          Row(children: [
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
             ElevatedButton(
               onPressed: () => saveState(context), // passing false
               child: const Text('OK'),
