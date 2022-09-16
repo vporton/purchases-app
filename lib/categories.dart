@@ -137,7 +137,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
           title: const Text("Edit Category"),
         ),
         body: Column(children: [
-          Column(key: const Key('name'), children: [
+          Column(children: [
             const Text("Category name:*"),
             TextField(
                 controller: nameTextController,
@@ -147,7 +147,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
                   });
                 })
           ]),
-          Column(key: const Key('description'), children: [
+          Column(children: [
             const Text("Description:"),
             TextField(
                 controller: descriptionTextController,
