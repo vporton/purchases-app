@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
           child: ListView(children: [
-            ListTile(leading: const Icon(Icons.place), title: Text("Places"), onTap: () { Navigator.pushNamed(context, '/places').then((value) {}); }),
+            ListTile(leading: const Icon(Icons.place), title: Text("Nearby places"), onTap: () { Navigator.pushNamed(context, '/places').then((value) {}); }),
             ListTile(leading: const Icon(Icons.place), title: Text("Saved Places"), onTap: () { Navigator.pushNamed(context, '/places/saved').then((value) {}); }),
             ListTile(leading: const Icon(Icons.shopping_cart), title: Text("Products")),
             ListTile(leading: const Icon(Icons.category), title: Text("Product categories")),

@@ -202,7 +202,7 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
       conflictAlgorithm: ConflictAlgorithm.replace,
     ).then((c) => {});
 
-    Navigator.pushNamed(context, '/')
+    Navigator.pushNamed(context, '/places/saved')
         .then((value) {}); // TODO: to where navigate?
   }
 
