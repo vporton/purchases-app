@@ -87,7 +87,7 @@ class _PlacesAddState extends State<PlacesAdd> {
   void onChoosePlaceImpl(PlaceData place, BuildContext context) {
     // Below warrants `widget.db != null`.
     widget.onChoosePlace(place);
-    Navigator.pushNamed(context, '/places/add/form').then((value) {});
+    Navigator.pushNamed(context, '/places/edit').then((value) {});
   }
 
   @override
@@ -273,7 +273,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
     void onChoosePlaceImpl(PlaceData place, BuildContext context) {
       // Below warrants `widget.db != null`.
       widget.onChoosePlace(place);
-      Navigator.pushNamed(context, '/places/add/form').then((value) {});
+      Navigator.pushNamed(context, '/places/edit').then((value) {});
     }
 
     if (widget.db != null) {
