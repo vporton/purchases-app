@@ -35,21 +35,20 @@ class CategoriesState extends State<Categories> {
           ),
           title: const Text("Product Categories"),
         ),
-        body: ListView(
-            children: list
-                .map(
-                  (c) => Row(children: [
-                    Text(c, textScaleFactor: 2.0),
-                    Column(children: const [
-                      Text("Supercategories"),
-                      Text("Subcategories"),
-                      Text("Edit"),
-                      Text("Delete"),
-                    ])
-                  ]),
-                )
-                .toList(growable: false)
-        )
-    );
+        body: ListView.separated(
+          separatorBuilder: (context, index) => const Divider(
+            color: Colors.black45,
+          ),
+          itemCount: list.length,
+          itemBuilder: (context, index) => Row(children: [
+            Text(list[index], textScaleFactor: 2.0),
+            Column(children: const [
+              Text("Supercategories"),
+              Text("Subcategories"),
+              Text("Edit"),
+              Text("Delete"),
+            ])
+          ]),
+        ));
   }
 }
