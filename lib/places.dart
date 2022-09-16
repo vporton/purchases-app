@@ -185,7 +185,7 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
       'google_id': place!.placeId,
       'name': place!.name,
       'description': place!.description,
-      'uri_icon': place!.icon.toString(),
+      'icon_url': place!.icon.toString(),
       'lat': place!.location.latitude,
       'lng': place!.location.longitude,
     }).then((c) => {});
@@ -266,18 +266,32 @@ class _SavedPlacesState extends State<SavedPlaces> {
     List<PlaceData> places = [];
     if (widget.db != null) {
       widget.db!
-          .query('Place', columns: [], orderBy: 'name')
+          .query('Place',
+              columns: [
+                'google_id',
+                'name',
+                'description',
+                'lat',
+                'lng',
+                'icon_url',
+              ],
+              orderBy: 'name')
           .then((result) => {
                 setState(() {
-                  places = result
+                  var newPlaces = result
                       .map((row) => PlaceData(
                           placeId: row['google_id'] as String,
                           name: row['name'] as String,
                           description: row['description'] as String,
-                          location: LatLng(row['latitude'] as double,
-                              row['longitude'] as double),
+                          location: LatLng(
+                              row['lat'] as double, row['lng'] as double),
                           icon: Uri.parse(row['icon_url'] as String)))
                       .toList(growable: false);
+                  if (newPlaces != places) {
+                    debugPrint("NOT EQUAL");
+                    places = newPlaces;
+                  }
+                  debugPrint("PLACES: $places / $newPlaces");
                 })
               });
     }

@@ -56,7 +56,9 @@ Future<Database> myOpenDatabase() async {
   // Make sure the directory exists
   try {
     await Directory(databasesPath).create(recursive: true);
-  } catch (_) {}
+  } catch (e) {
+    debugPrint("Error creating database path: ${e.toString()}");
+  }
 
   return await databaseFactory.openDatabase(path,
       options: OpenDatabaseOptions(
