@@ -51,8 +51,7 @@ class MyAppState extends State<MyApp> {
       ),
       routes: {
         '/map': (context) => MyHomePage(onMove: onMove),
-        '/places/nearby': (context) => Places(coord: coord),
-        '/places/saved': (context) => SavedPlaces(db: db),
+        '/places/saved': (context) => SavedPlaces(db: db, coord: coord),
         '/places/nearby/add': (context) => PlacesAdd(db: db, coord: coord),
         '/places/edit': (context) => PlacesAddForm(db: db),
         '/categories': (context) => Categories(db: db),
@@ -105,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.place),
               title: const Text("Nearby places"),
               onTap: () {
-                Navigator.pushNamed(context, '/places/nearby').then((value) {});
+                Navigator.pushNamed(context, '/places/nearby/add').then((value) {});
               }),
           ListTile(
               leading: const Icon(Icons.save),

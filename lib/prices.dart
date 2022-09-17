@@ -18,7 +18,7 @@ class _ShortCategoryData {
 }
 
 class PriceData {
-  final int? id;
+  int? id;
   int? placeIndex;
   int? categoryIndex;
   double? price;
@@ -80,15 +80,18 @@ class _PricesEditState extends State<PricesEdit> {
     //   return;
     // }
     // TODO: `db` in principle can be yet null.
-    widget.db!
-        .query('Product',
-            columns: ['price'],
-            where: "store=? AND category=?",
-            whereArgs: [data!.placeIndex, data!.categoryIndex])
-        .then((result) {
-      priceTextController.text =
-          result.isNotEmpty ? (result[0]['price'] as double).toString() : "";
-    });
+    if (data!.placeIndex != null && data!.categoryIndex != null) {
+      widget.db!
+          .query('Product',
+              columns: ['id', 'price'],
+              where: "store=? AND category=?",
+              whereArgs: [data!.placeIndex, data!.categoryIndex])
+          .then((result) {
+        data!.id = result.isNotEmpty ? result[0]['id'] as int : null;
+          priceTextController.text =
+            result.isNotEmpty ? (result[0]['price'] as double).toString() : "";
+      });
+    }
   }
 
   @override

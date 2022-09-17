@@ -6,37 +6,6 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:collection/collection.dart';
 import 'package:sqflite/sqflite.dart';
 
-class Places extends StatefulWidget {
-  final LatLng? coord;
-
-  Places({super.key, required this.coord});
-
-  @override
-  State<Places> createState() => _PlacesState();
-}
-
-class _PlacesState extends State<Places> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(
-            child: const Icon(Icons.close),
-            onTap: () => Navigator.pop(context)),
-        title: const Text("Places"),
-      ),
-      body: Center(
-        child: ListView(children: []), // FIXME
-      ),
-      floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.pushNamed(context, '/places/nearby/add', arguments: widget.coord).then((value) {});
-          }),
-    );
-  }
-}
-
 class PlacesAdd extends StatefulWidget {
   final Database? db; // TODO: unneeded.
   final LatLng? coord;
@@ -244,8 +213,9 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
 
 class SavedPlaces extends StatefulWidget {
   final Database? db;
+  final LatLng? coord;
 
-  const SavedPlaces({super.key, required this.db});
+  const SavedPlaces({super.key, required this.db, required this.coord});
 
   @override
   State<StatefulWidget> createState() => _SavedPlacesState();
@@ -299,6 +269,11 @@ class _SavedPlacesState extends State<SavedPlaces> {
         title: const Text("Saved Places"),
       ),
       body: _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            Navigator.pushNamed(context, '/places/nearby/add', arguments: widget.coord).then((value) {});
+          }),
     );
   }
 }
