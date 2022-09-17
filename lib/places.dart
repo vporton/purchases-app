@@ -82,7 +82,8 @@ class _PlacesAddState extends State<PlacesAdd> {
   @override
   void initState() {
     super.initState();
-  }
+    coord = widget.coord;
+}
 
   void onChoosePlaceImpl(PlaceData place, BuildContext context) {
     // Below warrants `widget.db != null`.
@@ -93,10 +94,6 @@ class _PlacesAddState extends State<PlacesAdd> {
   @override
   Widget build(BuildContext context) {
     if (widget.coord != coord) {
-      setState(() {
-        coord = widget.coord;
-      });
-
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
       if (widget.coord != null && widget.db != null) {
         final mapsPlaces = GoogleMapsPlaces(
@@ -207,11 +204,13 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    setState(() {
-      place = widget.place;
-    });
+  void initState() {
+    super.initState();
+    place = widget.place;
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           leading: InkWell(
@@ -225,18 +224,14 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
             TextField(
                 controller: TextEditingController(text: place!.name),
                 onChanged: (value) {
-                  setState(() {
-                    place?.name = value;
-                  });
+                  place?.name = value;
                 })
           ]),
           Column(
             children: [
               const Text("Description:*"),
               TextField(onChanged: (value) {
-                setState(() {
-                  place?.description = value;
-                });
+                place?.description = value;
               })
             ],
           ),

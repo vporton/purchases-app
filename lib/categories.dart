@@ -120,15 +120,15 @@ class CategoriesEditState extends State<CategoriesEdit> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (category == null) {
-      setState(() {
-        category = widget.category ?? CategoryData(name: "", description: "");
-      });
-      nameTextController.text = category!.name;
-      descriptionTextController.text = category!.description;
-    }
+  void initState() {
+    super.initState();
+    category = widget.category ?? CategoryData(name: "", description: "");
+    nameTextController.text = category!.name;
+    descriptionTextController.text = category!.description;
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           leading: InkWell(
@@ -142,9 +142,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
             TextField(
                 controller: nameTextController,
                 onChanged: (value) {
-                  setState(() {
-                    category!.name = value;
-                  });
+                  category!.name = value;
                 })
           ]),
           Column(children: [
@@ -152,9 +150,7 @@ class CategoriesEditState extends State<CategoriesEdit> {
             TextField(
                 controller: descriptionTextController,
                 onChanged: (value) {
-                  setState(() {
-                    category!.description = value;
-                  });
+                  category!.description = value;
                 })
           ]),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

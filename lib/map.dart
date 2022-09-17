@@ -28,21 +28,19 @@ class MyMapState extends State<MyMap> {
   }
 
   void onLocationDataChanged(LocationData currentLocation) {
-    setState(() {
-      if(currentLocation.latitude == null || currentLocation.longitude == null) {
-        // userLocation = null;
-      } else {
-        var loc = LatLng(currentLocation.latitude!, currentLocation.longitude!);
-        if(loc != userLocation) {
-          setState(() {
-            userLocation = loc;
-          });
-          if (widget.onMove != null) {
-            widget.onMove!(loc);
-          }
+    if(currentLocation.latitude == null || currentLocation.longitude == null) {
+      // userLocation = null;
+    } else {
+      var loc = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+      if(loc != userLocation) {
+        setState(() {
+          userLocation = loc;
+        });
+        if (widget.onMove != null) {
+          widget.onMove!(loc);
         }
       }
-    });
+    }
   }
 
   @override
