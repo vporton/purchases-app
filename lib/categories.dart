@@ -52,22 +52,48 @@ class CategoriesState extends State<Categories> {
           color: Colors.black45,
         ),
         itemCount: list.length,
-        itemBuilder: (context, index) =>
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(list[index].name, textScaleFactor: 2.0),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Text("Supercategories", style: TextStyle(color: Colors.blue)),
-            const Text("Subcategories", style: TextStyle(color: Colors.blue)),
-            InkWell(
-                child: const Text("Edit", style: TextStyle(color: Colors.blue)),
-                onTap: () {
-                  Navigator.pushNamed(context, '/categories/edit',
-                          arguments: list[index])
-                      .then((value) {});
-                }),
-            const Text("Delete", style: TextStyle(color: Colors.blue)),
-          ])
+        itemBuilder: (context, index) => Row(children: [
+          Expanded(child: Text(list[index].name, textScaleFactor: 2.0)),
+          PopupMenuButton(
+              onSelected: (item) {},
+              itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem(
+                      // value: Menu.itemOne,
+                      child: Text('Edit prices'),
+                    ),
+                    const PopupMenuItem(
+                      // value: Menu.itemOne,
+                      child: Text('Supercategories'),
+                    ),
+                    const PopupMenuItem(
+                      // value: Menu.itemTwo,
+                      child: Text('Subcategories'),
+                    ),
+                    const PopupMenuItem(
+                      // value: Menu.itemThree,
+                      child: Text('Edit'),
+                    ),
+                    const PopupMenuItem(
+                      // value: Menu.itemFour,
+                      child: Text('Delete'),
+                    ),
+                  ]),
         ]),
+        //     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        //   Text(list[index].name, textScaleFactor: 2.0),
+        //   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        //     const Text("Supercategories", style: TextStyle(color: Colors.blue)),
+        //     const Text("Subcategories", style: TextStyle(color: Colors.blue)),
+        //     InkWell(
+        //         child: const Text("Edit", style: TextStyle(color: Colors.blue)),
+        //         onTap: () {
+        //           Navigator.pushNamed(context, '/categories/edit',
+        //                   arguments: list[index])
+        //               .then((value) {});
+        //         }),
+        //     const Text("Delete", style: TextStyle(color: Colors.blue)),
+        //   ])
+        // ]),
       ),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
