@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:purchases/map.dart';
 import 'package:purchases/places.dart';
+import 'package:purchases/prices.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -51,17 +52,12 @@ class MyAppState extends State<MyApp> {
       routes: {
         '/map': (context) => MyHomePage(onMove: onMove),
         '/places/nearby': (context) => Places(coord: coord),
-        '/places/saved': (context) =>
-            SavedPlaces(db: db),
-        '/places/nearby/add': (context) =>
-            PlacesAdd(db: db, coord: coord),
-        '/places/edit': (context) =>
-            PlacesAddForm(db: db),
-        '/categories': (context) =>
-            Categories(db: db),
-        '/categories/edit': (context) =>
-            CategoriesEdit(db: db),
-        // '/prices/edit': (context) => PricesEdit(db: db),
+        '/places/saved': (context) => SavedPlaces(db: db),
+        '/places/nearby/add': (context) => PlacesAdd(db: db, coord: coord),
+        '/places/edit': (context) => PlacesAddForm(db: db),
+        '/categories': (context) => Categories(db: db),
+        '/categories/edit': (context) => CategoriesEdit(db: db),
+        '/prices/edit': (context) => PricesEdit(db: db),
       },
     );
   }
@@ -73,7 +69,7 @@ class MyHomePage extends StatefulWidget {
   final Function(LatLng)? onMove;
 
   void onMoveImpl(LatLng coord) {
-    if(onMove != null) {
+    if (onMove != null) {
       onMove!(coord);
     }
   }
@@ -125,7 +121,12 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
           ListTile(
               leading: const Icon(Icons.shopping_cart),
-              title: const Text("Prices")),
+              title: const Text("Prices"),
+              onTap: () {
+                Navigator.pushNamed(context, '/prices/edit',
+                        arguments: PriceData.empty())
+                    .then((value) {});
+              }),
         ]),
       ),
       body: Center(

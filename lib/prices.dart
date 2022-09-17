@@ -45,7 +45,7 @@ class PricesEdit extends StatefulWidget {
 class _PricesEditState extends State<PricesEdit> {
   List<_ShortPlaceData>? places;
   List<_ShortCategoryData>? categories;
-  PriceData? data;
+  PriceData? data = PriceData.empty();
   String? placeName;
   String? categoryName;
 
@@ -122,10 +122,10 @@ class _PricesEditState extends State<PricesEdit> {
                         data!.categoryIndex = result[0]['category'] as int;
                         data!.price = result[0]['price'] as double;
                         if (places != null) {
-                          placeName = places!.where((r) => r.id == placeIndex).first.name;
+                          placeName = places!.where((r) => r.id == data?.placeIndex).first.name; // TODO: Is `data?` correct here?
                         }
                         if (categories != null) {
-                          categoryName = categories!.where((r) => r.id == categoryIndex).first.name;
+                          categoryName = categories!.where((r) => r.id == data?.categoryIndex).first.name; // TODO: Is `data?` correct here?
                         }
                       })
                     }

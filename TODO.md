@@ -7,5 +7,6 @@
 - Cursor jumps to the leftmost position after typing each character in Edit Place.
 - Editing sub/super- categories.
 - Help.
+- When selecting shop or category, update value of price entry widget.
 
 See also `TODO` and `FIXME` in the source.
