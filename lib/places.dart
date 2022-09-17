@@ -7,7 +7,9 @@ import 'package:collection/collection.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Places extends StatefulWidget {
-  const Places({super.key});
+  final LatLng? coord;
+
+  Places({super.key, required this.coord});
 
   @override
   State<Places> createState() => _PlacesState();
@@ -24,22 +26,22 @@ class _PlacesState extends State<Places> {
         title: const Text("Places"),
       ),
       body: Center(
-        child: ListView(children: []),
+        child: ListView(children: []), // FIXME
       ),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            // FIXME: Reset `place` to null.
-            Navigator.pushNamed(context, '/places/add').then((value) {});
+            Navigator.pushNamed(context, '/places/add', arguments: widget.coord).then((value) {});
           }),
     );
   }
 }
 
 class PlacesAdd extends StatefulWidget {
-  Database? db; // TODO: unneeded.
+  final Database? db; // TODO: unneeded.
+  final LatLng? coord;
 
-  PlacesAdd({super.key, required this.db});
+  const PlacesAdd({super.key, required this.db, required this.coord});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
@@ -80,7 +82,7 @@ class _PlacesAddState extends State<PlacesAdd> {
 
   @override
   Widget build(BuildContext context) {
-    var passedCoord = ModalRoute.of(context)!.settings.arguments as LatLng;
+    var passedCoord = ModalRoute.of(context)!.settings.arguments as LatLng; // FIXME: It may be null.
     if (passedCoord != coord) {
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
       if (passedCoord != null && widget.db != null) {
@@ -173,7 +175,6 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
 
   @override
   void initState() {
-    place = ModalRoute.of(context)!.settings.arguments as PlaceData;
   }
 
   void saveState(BuildContext context) {
@@ -197,6 +198,11 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
 
   @override
   Widget build(BuildContext context) {
+    var newPlace = ModalRoute.of(context)!.settings.arguments as PlaceData;
+    setState(() {
+      place = newPlace;
+    });
+
     return Scaffold(
         appBar: AppBar(
           leading: InkWell(
@@ -276,6 +282,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
                 location: LatLng(row['lat'] as double, row['lng'] as double),
                 icon: Uri.parse(row['icon_url'] as String)))
             .toList(growable: false);
+        debugPrint("YYY: ${newPlaces.length}");
         var eq = const ListEquality().equals;
         if (!eq(newPlaces, places)) {
           setState(() {
@@ -285,6 +292,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
       });
     }
 
+    debugPrint("XXX: ${places.length}");
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(

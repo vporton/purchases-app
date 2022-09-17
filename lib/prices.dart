@@ -18,16 +18,16 @@ class _ShortCategoryData {
 }
 
 class PricesEdit extends StatefulWidget {
+  final Database? db;
   final int? productId;
 
-  const PricesEdit({super.key, required this.productId});
+  const PricesEdit({super.key, required this.db, required this.productId});
 
   @override
   State<StatefulWidget> createState() => _PricesEditState();
 }
 
 class _PricesEditState extends State<PricesEdit> {
-  Database? db;
   List<_ShortPlaceData>? places;
   List<_ShortCategoryData>? categories;
   int? placeIndex;
@@ -36,12 +36,12 @@ class _PricesEditState extends State<PricesEdit> {
   String? categoryName;
   double? price;
 
-  _PricesEditState({required this.db, required this.price});
+  _PricesEditState(/*{required this.price}*/); // FIXME
 
   void saveState(BuildContext context) {
     if (widget.productId != null) {
       // TODO: `db` in principle can be yet null.
-      db!
+      widget.db!
           .update(
               'Product',
               {
@@ -53,7 +53,7 @@ class _PricesEditState extends State<PricesEdit> {
               whereArgs: [widget.productId])
           .then((c) => {});
     } else {
-      db!.insert('Product', {
+      widget.db!.insert('Product', {
         'store': placeIndex,
         'category': categoryIndex,
         'price': price!, // FIXME: `price` may be null.
@@ -63,9 +63,9 @@ class _PricesEditState extends State<PricesEdit> {
 
   @override
   Widget build(BuildContext context) {
-    if (db != null) {
+    if (widget.db != null) {
       if (places == null) {
-        db!
+        widget.db!
             .query('Place', columns: ['id', 'name'], orderBy: 'name')
             .then((result) {
           var newPlaces = result
@@ -78,7 +78,7 @@ class _PricesEditState extends State<PricesEdit> {
         });
       }
       if (categories == null) {
-        db!
+        widget.db!
             .query('Category', columns: ['id', 'name'], orderBy: 'name')
             .then((result) {
           var newCategories = result
@@ -92,7 +92,7 @@ class _PricesEditState extends State<PricesEdit> {
       }
 
       if (widget.productId != null) {
-        db!
+        widget.db!
             .query('Product',
                 columns: ['store', 'category', 'price'],
                 where: "id=?",

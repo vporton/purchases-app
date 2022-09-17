@@ -33,6 +33,7 @@ class MyAppState extends State<MyApp> {
   }
 
   void onMove(LatLng coord) {
+    debugPrint("ZZZ: $coord");
     if (coord != this.coord) {
       setState(() {
         this.coord = coord;
@@ -49,12 +50,12 @@ class MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => MyHomePage(),
-        '/places': (context) => const Places(),
+        '/': (context) => MyHomePage(onMove: onMove),
+        '/places': (context) => Places(coord: coord),
         '/places/saved': (context) =>
             SavedPlaces(db: db),
         '/places/add': (context) =>
-            PlacesAdd(db: db),
+            PlacesAdd(db: db, coord: coord),
         '/places/edit': (context) =>
             PlacesAddForm(db: db),
         '/categories': (context) =>

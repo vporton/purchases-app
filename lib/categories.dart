@@ -117,16 +117,20 @@ class CategoriesEditState extends State<CategoriesEdit> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    category = ModalRoute.of(context)!.settings.arguments as CategoryData? ??
-        CategoryData(name: "", description: "");
-    nameTextController.text = category!.name;
-    descriptionTextController.text = category!.description;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (category == null) {
+      var newCategory = ModalRoute
+          .of(context)!
+          .settings
+          .arguments as CategoryData? ??
+          CategoryData(name: "", description: "");
+      setState(() {
+        category = newCategory;
+      });
+      nameTextController.text = category!.name;
+      descriptionTextController.text = category!.description;
+    }
+
     return Scaffold(
         appBar: AppBar(
           leading: InkWell(
