@@ -9,5 +9,6 @@
 - Help.
 - How to dispose `TextEditingController`?
 - It allows to enter only whole numbers as prices.
+- Added place does not appear in Saved Places without "refresh" (closing Saved Places).
 
 See also `TODO` and `FIXME` in the source.
