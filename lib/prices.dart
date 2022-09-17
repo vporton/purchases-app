@@ -18,19 +18,16 @@ class _ShortCategoryData {
 }
 
 class PriceData {
-  int? id;
   int? placeIndex;
   int? categoryIndex;
   double? price;
 
   PriceData.empty()
-      : id = null,
-        placeIndex = null,
+      : placeIndex = null,
         categoryIndex = null,
         price = null;
 
-  PriceData(
-      {required this.id, this.placeIndex, this.categoryIndex, this.price});
+  PriceData({this.placeIndex, this.categoryIndex, this.price});
 }
 
 class PricesEdit extends StatefulWidget {
@@ -50,7 +47,7 @@ class _PricesEditState extends State<PricesEdit> {
   String? categoryName;
 
   void saveState(BuildContext context) {
-    if (data?.id != null) {
+    if (data?.placeIndex != null && data?.categoryIndex != null) {
       // TODO: `db` in principle can be yet null.
       widget.db!
           .update(
@@ -60,8 +57,8 @@ class _PricesEditState extends State<PricesEdit> {
                 'category': data!.categoryIndex,
                 'price': data!.price!, // FIXME: `price` may be null.
               },
-              where: "id=?",
-              whereArgs: [data!.id])
+              where: "store=? AND category=?",
+              whereArgs: [data!.placeIndex, data!.categoryIndex])
           .then((c) => {});
     } else {
       widget.db!.insert('Product', {
@@ -76,19 +73,15 @@ class _PricesEditState extends State<PricesEdit> {
 
   // TODO: Passing `TextEditingController` is a hack.
   void updatePrice(TextEditingController priceTextController) {
-    // if (data?.id != null) {
-    //   return;
-    // }
     // TODO: `db` in principle can be yet null.
     if (data!.placeIndex != null && data!.categoryIndex != null) {
       widget.db!
           .query('Product',
-              columns: ['id', 'price'],
+              columns: ['price'],
               where: "store=? AND category=?",
               whereArgs: [data!.placeIndex, data!.categoryIndex])
           .then((result) {
-        data!.id = result.isNotEmpty ? result[0]['id'] as int : null;
-          priceTextController.text =
+        priceTextController.text =
             result.isNotEmpty ? (result[0]['price'] as double).toString() : "";
       });
     }
@@ -114,6 +107,10 @@ class _PricesEditState extends State<PricesEdit> {
               .toList(growable: false);
           setState(() {
             places = newPlaces;
+            placeName = places!
+                .where((r) => r.id == data?.placeIndex)
+                .first
+                .name; // TODO: Is `data?` correct here?
           });
         });
       }
@@ -127,41 +124,16 @@ class _PricesEditState extends State<PricesEdit> {
               .toList(growable: false);
           setState(() {
             categories = newCategories;
+            categoryName = categories!
+                .where((r) => r.id == data?.categoryIndex)
+                .first
+                .name; // TODO: Is `data?` correct here?
           });
         });
       }
-
-      if (data?.id != null) {
-        widget.db!
-            .query('Product',
-                columns: ['store', 'category', 'price'],
-                where: "id=?",
-                whereArgs: [data!.id])
-            .then((result) => {
-                  if (result.isNotEmpty)
-                    {
-                      setState(() {
-                        data!.placeIndex = result[0]['store'] as int;
-                        data!.categoryIndex = result[0]['category'] as int;
-                        data!.price = result[0]['price'] as double;
-                        if (places != null) {
-                          placeName = places!
-                              .where((r) => r.id == data?.placeIndex)
-                              .first
-                              .name; // TODO: Is `data?` correct here?
-                        }
-                        if (categories != null) {
-                          categoryName = categories!
-                              .where((r) => r.id == data?.categoryIndex)
-                              .first
-                              .name; // TODO: Is `data?` correct here?
-                        }
-                      })
-                    }
-                });
-      }
     }
 
+    // TODO: state?
     priceTextController.text =
         data?.price == null ? "" : data!.price.toString();
 
