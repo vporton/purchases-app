@@ -70,11 +70,31 @@ class _PricesEditState extends State<PricesEdit> {
         'price': data!.price!, // FIXME: `price` may be null.
       }).then((c) => {});
     }
+
+    Navigator.pop(context);
+  }
+
+  // TODO: Passing `TextEditingController` is a hack.
+  void updatePrice(TextEditingController priceTextController) {
+    // if (data?.id != null) {
+    //   return;
+    // }
+    // TODO: `db` in principle can be yet null.
+    widget.db!
+        .query('Product',
+            columns: ['price'],
+            where: "store=? AND category=?",
+            whereArgs: [data!.placeIndex, data!.categoryIndex])
+        .then((result) {
+      priceTextController.text =
+          result.isNotEmpty ? (result[0]['price'] as double).toString() : "";
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var passedData = ModalRoute.of(context)!.settings.arguments as PriceData;
+    var priceTextController = TextEditingController();
     if (passedData != data) {
       setState(() {
         data = passedData;
@@ -122,10 +142,16 @@ class _PricesEditState extends State<PricesEdit> {
                         data!.categoryIndex = result[0]['category'] as int;
                         data!.price = result[0]['price'] as double;
                         if (places != null) {
-                          placeName = places!.where((r) => r.id == data?.placeIndex).first.name; // TODO: Is `data?` correct here?
+                          placeName = places!
+                              .where((r) => r.id == data?.placeIndex)
+                              .first
+                              .name; // TODO: Is `data?` correct here?
                         }
                         if (categories != null) {
-                          categoryName = categories!.where((r) => r.id == data?.categoryIndex).first.name; // TODO: Is `data?` correct here?
+                          categoryName = categories!
+                              .where((r) => r.id == data?.categoryIndex)
+                              .first
+                              .name; // TODO: Is `data?` correct here?
                         }
                       })
                     }
@@ -133,8 +159,8 @@ class _PricesEditState extends State<PricesEdit> {
       }
     }
 
-    var priceTextController =
-        TextEditingController(text: data?.price == null ? "" : data!.price.toString());
+    priceTextController.text =
+        data?.price == null ? "" : data!.price.toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -159,6 +185,7 @@ class _PricesEditState extends State<PricesEdit> {
             onChanged: (id) {
               setState(() {
                 data!.placeIndex = id; // TODO: Is `!` valid?
+                updatePrice(priceTextController);
               });
             },
           ),
@@ -178,6 +205,7 @@ class _PricesEditState extends State<PricesEdit> {
             onChanged: (id) {
               setState(() {
                 data!.categoryIndex = id; // TODO: Is `!` valid?
+                updatePrice(priceTextController);
               });
             },
           ),

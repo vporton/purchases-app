@@ -31,7 +31,7 @@ void _migrateInitial(Batch batch) {
     category INTEGER NOT NULL REFERENCES Category(id) ON UPDATE CASCADE,
     price REAL NOT NULL
 )''');
-  batch.execute('CREATE INDEX idx_product_uniq ON Product (store, category)');
+  batch.execute('CREATE UNIQUE INDEX idx_product_uniq ON Product (store, category)');
   batch.execute('CREATE INDEX idx_product_price ON Product (price)');
   batch.execute('''CREATE TABLE CategoryRel (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

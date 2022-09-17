@@ -7,6 +7,7 @@
 - Cursor jumps to the leftmost position after typing each character in Edit Place.
 - Editing sub/super- categories.
 - Help.
-- When selecting shop or category, update value of price entry widget.
+- How to dispose `TextEditingController`?
+- It allows to enter only whole numbers as prices.
 
 See also `TODO` and `FIXME` in the source.
