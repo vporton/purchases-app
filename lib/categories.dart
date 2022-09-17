@@ -119,11 +119,9 @@ class CategoriesEditState extends State<CategoriesEdit> {
   @override
   Widget build(BuildContext context) {
     if (category == null) {
-      var newCategory = ModalRoute
-          .of(context)!
-          .settings
-          .arguments as CategoryData? ??
-          CategoryData(name: "", description: "");
+      var newCategory =
+          ModalRoute.of(context)!.settings.arguments as CategoryData? ??
+              CategoryData(name: "", description: "");
       setState(() {
         category = newCategory;
       });

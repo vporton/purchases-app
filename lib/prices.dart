@@ -143,8 +143,8 @@ class _PricesEditState extends State<PricesEdit> {
             onTap: () => Navigator.pop(context)),
         title: const Text("Edit Price"),
       ),
-      body: Column(children: [
-        Column(children: [
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text("Shop (place)*:"),
           DropdownButton<int>(
             value: data?.placeIndex,
@@ -163,7 +163,7 @@ class _PricesEditState extends State<PricesEdit> {
             },
           ),
         ]),
-        Column(children: [
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text("Category*:"),
           DropdownButton<int>(
             value: data?.categoryIndex,
@@ -182,7 +182,7 @@ class _PricesEditState extends State<PricesEdit> {
             },
           ),
         ]),
-        Column(children: [
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text("Price*:"),
           TextField(
             controller: priceTextController,
