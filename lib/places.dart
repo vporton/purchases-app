@@ -38,14 +38,8 @@ class _PlacesState extends State<Places> {
 
 class PlacesAdd extends StatefulWidget {
   Database? db; // TODO: unneeded.
-  LatLng? coord;
-  final void Function(PlaceData) onChoosePlace;
 
-  PlacesAdd(
-      {super.key,
-      required this.db,
-      required this.coord,
-      required this.onChoosePlace});
+  PlacesAdd({super.key, required this.db});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
@@ -76,33 +70,27 @@ class PlaceData {
 }
 
 class _PlacesAddState extends State<PlacesAdd> {
-  LatLng? coord;
   List<PlaceData> places = [];
-
-  @override
-  void initState() {
-    super.initState();
-    coord = widget.coord;
-}
+  LatLng? coord;
 
   void onChoosePlaceImpl(PlaceData place, BuildContext context) {
     // Below warrants `widget.db != null`.
-    widget.onChoosePlace(place);
-    Navigator.pushNamed(context, '/places/edit').then((value) {});
+    Navigator.pushNamed(context, '/places/edit', arguments: place).then((value) {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.coord != coord) {
+    var passedCoord = ModalRoute.of(context)!.settings.arguments as LatLng;
+    if (passedCoord != coord) {
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
-      if (widget.coord != null && widget.db != null) {
+      if (passedCoord != null && widget.db != null) {
         final mapsPlaces = GoogleMapsPlaces(
             // TODO: Don't call every time.
             apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
         mapsPlaces
             .searchNearbyWithRadius(
                 Location(
-                    lat: widget.coord!.latitude, lng: widget.coord!.longitude),
+                    lat: passedCoord!.latitude, lng: passedCoord!.longitude),
                 2500)
             .then((PlacesSearchResponse response) {
           var results = response.results
@@ -173,9 +161,8 @@ class _PlacesList extends StatelessWidget {
 
 class PlacesAddForm extends StatefulWidget {
   final Database? db;
-  final PlaceData? place;
 
-  const PlacesAddForm({super.key, required this.db, required this.place});
+  const PlacesAddForm({super.key, required this.db});
 
   @override
   State<PlacesAddForm> createState() => _PlacesAddFormState();
@@ -183,6 +170,11 @@ class PlacesAddForm extends StatefulWidget {
 
 class _PlacesAddFormState extends State<PlacesAddForm> {
   PlaceData? place;
+
+  @override
+  void initState() {
+    place = ModalRoute.of(context)!.settings.arguments as PlaceData;
+  }
 
   void saveState(BuildContext context) {
     widget.db!
@@ -201,12 +193,6 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
         .then((c) => {});
 
     Navigator.pop(context);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    place = widget.place;
   }
 
   @override
@@ -252,9 +238,8 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
 
 class SavedPlaces extends StatefulWidget {
   final Database? db;
-  final void Function(PlaceData place) onChoosePlace;
 
-  const SavedPlaces({super.key, required this.db, required this.onChoosePlace});
+  const SavedPlaces({super.key, required this.db});
 
   @override
   State<StatefulWidget> createState() => _SavedPlacesState();
@@ -267,8 +252,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
   Widget build(BuildContext context) {
     void onChoosePlaceImpl(PlaceData place, BuildContext context) {
       // Below warrants `widget.db != null`.
-      widget.onChoosePlace(place);
-      Navigator.pushNamed(context, '/places/edit').then((value) {});
+      Navigator.pushNamed(context, '/places/edit', arguments: place).then((value) {});
     }
 
     if (widget.db != null) {

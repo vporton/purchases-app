@@ -12,10 +12,8 @@ class CategoryData {
 
 class Categories extends StatefulWidget {
   final Database? db;
-  final Function(CategoryData?) onChooseCategory;
 
-  const Categories(
-      {super.key, required this.db, required this.onChooseCategory});
+  const Categories({super.key, required this.db});
 
   @override
   State<StatefulWidget> createState() => CategoriesState();
@@ -63,8 +61,8 @@ class CategoriesState extends State<Categories> {
             InkWell(
                 child: const Text("Edit", style: TextStyle(color: Colors.blue)),
                 onTap: () {
-                  widget.onChooseCategory(list[index]);
-                  Navigator.pushNamed(context, '/categories/edit')
+                  Navigator.pushNamed(context, '/categories/edit',
+                          arguments: list[index])
                       .then((value) {});
                 }),
             const Text("Delete", style: TextStyle(color: Colors.blue)),
@@ -75,8 +73,8 @@ class CategoriesState extends State<Categories> {
           child: const Icon(Icons.add),
           onPressed: () {
             // Below warrants `widget.db != null`.
-            widget.onChooseCategory(null);
-            Navigator.pushNamed(context, '/categories/edit').then((value) {});
+            Navigator.pushNamed(context, '/categories/edit', arguments: null)
+                .then((value) {});
           }),
     );
   }
@@ -84,9 +82,8 @@ class CategoriesState extends State<Categories> {
 
 class CategoriesEdit extends StatefulWidget {
   Database? db;
-  CategoryData? category;
 
-  CategoriesEdit({super.key, required this.db, required this.category});
+  CategoriesEdit({super.key, required this.db});
 
   @override
   State<StatefulWidget> createState() => CategoriesEditState();
@@ -122,7 +119,8 @@ class CategoriesEditState extends State<CategoriesEdit> {
   @override
   void initState() {
     super.initState();
-    category = widget.category ?? CategoryData(name: "", description: "");
+    category = ModalRoute.of(context)!.settings.arguments as CategoryData? ??
+        CategoryData(name: "", description: "");
     nameTextController.text = category!.name;
     descriptionTextController.text = category!.description;
   }

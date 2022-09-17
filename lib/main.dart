@@ -23,14 +23,13 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   Database? db;
   LatLng? coord;
-  PlaceData? currentPlaceData; // for editing place
-  CategoryData? currentCategoryData; // for editing category
-  int? currentProductId;
 
   @override
   void initState() {
     super.initState();
-    myOpenDatabase().then((db) => setState(() { this.db = db; }));
+    myOpenDatabase().then((db) => setState(() {
+          this.db = db;
+        }));
   }
 
   void onMove(LatLng coord) {
@@ -39,18 +38,6 @@ class MyAppState extends State<MyApp> {
         this.coord = coord;
       });
     }
-  }
-
-  void onChoosePlace(PlaceData place) {
-    currentPlaceData = place;
-  }
-
-  void onChooseCategory(CategoryData? cat) {
-    currentCategoryData = cat;
-  }
-
-  void onChooseProduct(int? productId) {
-    currentProductId = productId;
   }
 
   @override
@@ -62,13 +49,18 @@ class MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => MyHomePage(onMove: onMove),
+        '/': (context) => MyHomePage(),
         '/places': (context) => const Places(),
-        '/places/saved': (context) => SavedPlaces(db: db, onChoosePlace: onChoosePlace),
-        '/places/add': (context) => PlacesAdd(coord: coord, db: db, onChoosePlace: onChoosePlace),
-        '/places/edit': (context) => PlacesAddForm(db: db, place: currentPlaceData),
-        '/categories': (context) => Categories(db: db, onChooseCategory: onChooseCategory),
-        '/categories/edit': (context) => CategoriesEdit(db: db, category: currentCategoryData),
+        '/places/saved': (context) =>
+            SavedPlaces(db: db),
+        '/places/add': (context) =>
+            PlacesAdd(db: db),
+        '/places/edit': (context) =>
+            PlacesAddForm(db: db),
+        '/categories': (context) =>
+            Categories(db: db),
+        '/categories/edit': (context) =>
+            CategoriesEdit(db: db),
         // '/products/edit': (context) => PricesEdit(db: db),
       },
     );
@@ -91,6 +83,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  LatLng? coord;
+
+  void onMoveImpl(LatLng coord) {
+    if (coord != this.coord) {
+      setState(() {
+        this.coord = coord;
+      });
+    }
+    if (widget.onMove != null) {
+      widget.onMove!(coord);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,12 +104,29 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text("Prices app"),
       ),
       drawer: Drawer(
-          child: ListView(children: [
-            ListTile(leading: const Icon(Icons.place), title: const Text("Nearby places"), onTap: () { Navigator.pushNamed(context, '/places').then((value) {}); }),
-            ListTile(leading: const Icon(Icons.save), title: const Text("Saved places"), onTap: () { Navigator.pushNamed(context, '/places/saved').then((value) {}); }),
-            ListTile(leading: const Icon(Icons.category), title: const Text("Product categories"), onTap: () { Navigator.pushNamed(context, '/categories').then((value) {}); }),
-            ListTile(leading: const Icon(Icons.shopping_cart), title: const Text("Prices")),
-          ]),
+        child: ListView(children: [
+          ListTile(
+              leading: const Icon(Icons.place),
+              title: const Text("Nearby places"),
+              onTap: () {
+                Navigator.pushNamed(context, '/places').then((value) {});
+              }),
+          ListTile(
+              leading: const Icon(Icons.save),
+              title: const Text("Saved places"),
+              onTap: () {
+                Navigator.pushNamed(context, '/places/saved').then((value) {});
+              }),
+          ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text("Product categories"),
+              onTap: () {
+                Navigator.pushNamed(context, '/categories').then((value) {});
+              }),
+          ListTile(
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text("Prices")),
+        ]),
       ),
       body: Center(
         child: MyMap(onMove: widget.onMoveImpl),

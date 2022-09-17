@@ -6,9 +6,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class MyMap extends StatefulWidget {
-  MyMap({super.key, this.onMove});
-
   final Function(LatLng)? onMove;
+
+  MyMap({super.key, this.onMove});
 
   @override
   State<MyMap> createState() => MyMapState();
