@@ -282,7 +282,6 @@ class _SavedPlacesState extends State<SavedPlaces> {
                 location: LatLng(row['lat'] as double, row['lng'] as double),
                 icon: Uri.parse(row['icon_url'] as String)))
             .toList(growable: false);
-        debugPrint("YYY: ${newPlaces.length}");
         var eq = const ListEquality().equals;
         if (!eq(newPlaces, places)) {
           setState(() {
@@ -292,7 +291,6 @@ class _SavedPlacesState extends State<SavedPlaces> {
       });
     }
 
-    debugPrint("XXX: ${places.length}");
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(

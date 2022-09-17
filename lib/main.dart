@@ -33,7 +33,6 @@ class MyAppState extends State<MyApp> {
   }
 
   void onMove(LatLng coord) {
-    debugPrint("ZZZ: $coord");
     if (coord != this.coord) {
       setState(() {
         this.coord = coord;
