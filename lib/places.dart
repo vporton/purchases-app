@@ -31,7 +31,7 @@ class _PlacesState extends State<Places> {
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            Navigator.pushNamed(context, '/places/add', arguments: widget.coord).then((value) {});
+            Navigator.pushNamed(context, '/places/nearby/add', arguments: widget.coord).then((value) {});
           }),
     );
   }

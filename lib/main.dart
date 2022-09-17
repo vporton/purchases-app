@@ -44,16 +44,16 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Purchases App',
-      initialRoute: '/',
+      initialRoute: '/map',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => MyHomePage(onMove: onMove),
-        '/places': (context) => Places(coord: coord),
+        '/map': (context) => MyHomePage(onMove: onMove),
+        '/places/nearby': (context) => Places(coord: coord),
         '/places/saved': (context) =>
             SavedPlaces(db: db),
-        '/places/add': (context) =>
+        '/places/nearby/add': (context) =>
             PlacesAdd(db: db, coord: coord),
         '/places/edit': (context) =>
             PlacesAddForm(db: db),
@@ -61,7 +61,7 @@ class MyAppState extends State<MyApp> {
             Categories(db: db),
         '/categories/edit': (context) =>
             CategoriesEdit(db: db),
-        // '/products/edit': (context) => PricesEdit(db: db),
+        // '/prices/edit': (context) => PricesEdit(db: db),
       },
     );
   }
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.place),
               title: const Text("Nearby places"),
               onTap: () {
-                Navigator.pushNamed(context, '/places').then((value) {});
+                Navigator.pushNamed(context, '/places/nearby').then((value) {});
               }),
           ListTile(
               leading: const Icon(Icons.save),

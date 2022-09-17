@@ -17,11 +17,26 @@ class _ShortCategoryData {
   _ShortCategoryData({required this.id, required this.name});
 }
 
+class PriceData {
+  final int? id;
+  int? placeIndex;
+  int? categoryIndex;
+  double? price;
+
+  PriceData.empty()
+      : id = null,
+        placeIndex = null,
+        categoryIndex = null,
+        price = null;
+
+  PriceData(
+      {required this.id, this.placeIndex, this.categoryIndex, this.price});
+}
+
 class PricesEdit extends StatefulWidget {
   final Database? db;
-  final int? productId;
 
-  const PricesEdit({super.key, required this.db, required this.productId});
+  const PricesEdit({super.key, required this.db});
 
   @override
   State<StatefulWidget> createState() => _PricesEditState();
@@ -30,39 +45,41 @@ class PricesEdit extends StatefulWidget {
 class _PricesEditState extends State<PricesEdit> {
   List<_ShortPlaceData>? places;
   List<_ShortCategoryData>? categories;
-  int? placeIndex;
-  int? categoryIndex;
+  PriceData? data;
   String? placeName;
   String? categoryName;
-  double? price;
-
-  _PricesEditState(/*{required this.price}*/); // FIXME
 
   void saveState(BuildContext context) {
-    if (widget.productId != null) {
+    if (data?.id != null) {
       // TODO: `db` in principle can be yet null.
       widget.db!
           .update(
               'Product',
               {
-                'store': placeIndex,
-                'category': categoryIndex,
-                'price': price!, // FIXME: `price` may be null.
+                'store': data!.placeIndex,
+                'category': data!.categoryIndex,
+                'price': data!.price!, // FIXME: `price` may be null.
               },
               where: "id=?",
-              whereArgs: [widget.productId])
+              whereArgs: [data!.id])
           .then((c) => {});
     } else {
       widget.db!.insert('Product', {
-        'store': placeIndex,
-        'category': categoryIndex,
-        'price': price!, // FIXME: `price` may be null.
+        'store': data!.placeIndex,
+        'category': data!.categoryIndex,
+        'price': data!.price!, // FIXME: `price` may be null.
       }).then((c) => {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    var passedData = ModalRoute.of(context)!.settings.arguments as PriceData;
+    if (passedData != data) {
+      setState(() {
+        data = passedData;
+      });
+    }
     if (widget.db != null) {
       if (places == null) {
         widget.db!
@@ -91,25 +108,25 @@ class _PricesEditState extends State<PricesEdit> {
         });
       }
 
-      if (widget.productId != null) {
+      if (data?.id != null) {
         widget.db!
             .query('Product',
                 columns: ['store', 'category', 'price'],
                 where: "id=?",
-                whereArgs: [widget.productId])
+                whereArgs: [data!.id])
             .then((result) => {
                   if (result.isNotEmpty)
                     {
                       setState(() {
-                        placeIndex = result[0]['store'] as int;
-                        categoryIndex = result[0]['category'] as int;
-                        price = result[0]['price'] as double;
-                        // if (places != null) {
-                        //   placeName = places!.where((r) => r.id == placeIndex).first.name;
-                        // }
-                        // if (categories != null) {
-                        //   categoryName = categories!.where((r) => r.id == categoryIndex).first.name;
-                        // }
+                        data!.placeIndex = result[0]['store'] as int;
+                        data!.categoryIndex = result[0]['category'] as int;
+                        data!.price = result[0]['price'] as double;
+                        if (places != null) {
+                          placeName = places!.where((r) => r.id == placeIndex).first.name;
+                        }
+                        if (categories != null) {
+                          categoryName = categories!.where((r) => r.id == categoryIndex).first.name;
+                        }
                       })
                     }
                 });
@@ -117,7 +134,7 @@ class _PricesEditState extends State<PricesEdit> {
     }
 
     var priceTextController =
-        TextEditingController(text: price == null ? "" : price.toString());
+        TextEditingController(text: data?.price == null ? "" : data!.price.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -130,7 +147,7 @@ class _PricesEditState extends State<PricesEdit> {
         Column(children: [
           const Text("Shop (place)*:"),
           DropdownButton<int>(
-            value: placeIndex,
+            value: data?.placeIndex,
             items: places == null
                 ? []
                 : places!.map((value) {
@@ -141,7 +158,7 @@ class _PricesEditState extends State<PricesEdit> {
                   }).toList(),
             onChanged: (id) {
               setState(() {
-                placeIndex = id;
+                data!.placeIndex = id; // TODO: Is `!` valid?
               });
             },
           ),
@@ -149,7 +166,7 @@ class _PricesEditState extends State<PricesEdit> {
         Column(children: [
           const Text("Category*:"),
           DropdownButton<int>(
-            value: categoryIndex,
+            value: data?.categoryIndex,
             items: categories == null
                 ? []
                 : categories!.map((value) {
@@ -160,7 +177,7 @@ class _PricesEditState extends State<PricesEdit> {
                   }).toList(),
             onChanged: (id) {
               setState(() {
-                categoryIndex = id;
+                data!.categoryIndex = id; // TODO: Is `!` valid?
               });
             },
           ),
@@ -172,7 +189,7 @@ class _PricesEditState extends State<PricesEdit> {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.number,
             onChanged: (text) {
-              price = double.parse(text);
+              data!.price = double.parse(text); // TODO: Is `!` valid?
             },
           )
         ]),
