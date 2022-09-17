@@ -19,10 +19,35 @@ class Categories extends StatefulWidget {
   State<StatefulWidget> createState() => CategoriesState();
 }
 
+enum CategoriesMenuOp {
+  editPrices,
+  supercategories,
+  subcategories,
+  edit,
+  delete
+}
+
+class CategoriesMenuData {
+  final CategoriesMenuOp op;
+  final int index;
+
+  const CategoriesMenuData({required this.op, required this.index});
+}
+
 class CategoriesState extends State<Categories> {
   List<CategoryData> list;
 
   CategoriesState() : list = [];
+
+  void onMenuClicked(CategoriesMenuData item) {
+    switch (item.op) {
+      case CategoriesMenuOp.edit:
+        Navigator.pushNamed(context, '/categories/edit',
+                arguments: list[item.index])
+            .then((value) {});
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,31 +78,35 @@ class CategoriesState extends State<Categories> {
         ),
         itemCount: list.length,
         itemBuilder: (context, index) => Row(children: [
-          Expanded(child: Text(list[index].name, textScaleFactor: 2.0)),
           PopupMenuButton(
-              onSelected: (item) {},
+              onSelected: onMenuClicked,
               itemBuilder: (BuildContext context) => [
-                    const PopupMenuItem(
-                      // value: Menu.itemOne,
+                    PopupMenuItem(
+                      value: CategoriesMenuData(
+                          op: CategoriesMenuOp.editPrices, index: index),
                       child: Text('Edit prices'),
                     ),
-                    const PopupMenuItem(
-                      // value: Menu.itemOne,
+                    PopupMenuItem(
+                      value: CategoriesMenuData(
+                          op: CategoriesMenuOp.supercategories, index: index),
                       child: Text('Supercategories'),
                     ),
-                    const PopupMenuItem(
-                      // value: Menu.itemTwo,
+                    PopupMenuItem(
+                      value: CategoriesMenuData(
+                          op: CategoriesMenuOp.subcategories, index: index),
                       child: Text('Subcategories'),
                     ),
-                    const PopupMenuItem(
-                      // value: Menu.itemThree,
-                      child: Text('Edit'),
-                    ),
-                    const PopupMenuItem(
-                      // value: Menu.itemFour,
+                    PopupMenuItem(
+                        value: CategoriesMenuData(
+                            op: CategoriesMenuOp.edit, index: index),
+                        child: Text("Edit")),
+                    PopupMenuItem(
+                      value: CategoriesMenuData(
+                          op: CategoriesMenuOp.delete, index: index),
                       child: Text('Delete'),
                     ),
                   ]),
+          Text(list[index].name, textScaleFactor: 2.0),
         ]),
         //     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         //   Text(list[index].name, textScaleFactor: 2.0),
