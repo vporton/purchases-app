@@ -10,5 +10,8 @@
 - How to dispose `TextEditingController`?
 - It allows to enter only whole numbers as prices.
 - Added place does not appear in Saved Places without "refresh" (closing Saved Places).
+- Rename `store` to `shop` in DB.
+- IN prices per category include prices from subcategories (with small font specifying which
+  subcategory).
 
 See also `TODO` and `FIXME` in the source.

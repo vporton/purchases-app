@@ -20,7 +20,7 @@ class Categories extends StatefulWidget {
 }
 
 enum CategoriesMenuOp {
-  editPrices,
+  prices,
   supercategories,
   subcategories,
   edit,
@@ -41,9 +41,14 @@ class CategoriesState extends State<Categories> {
 
   void onMenuClicked(CategoriesMenuData item) {
     switch (item.op) {
+      case CategoriesMenuOp.prices:
+        Navigator.pushNamed(context, '/categories/prices',
+            arguments: list[item.index].id)
+            .then((value) {});
+        break;
       case CategoriesMenuOp.edit:
         Navigator.pushNamed(context, '/categories/edit',
-                arguments: list[item.index])
+            arguments: list[item.index])
             .then((value) {});
         break;
     }
@@ -83,8 +88,8 @@ class CategoriesState extends State<Categories> {
               itemBuilder: (BuildContext context) => [
                     PopupMenuItem(
                       value: CategoriesMenuData(
-                          op: CategoriesMenuOp.editPrices, index: index),
-                      child: Text('Edit prices'),
+                          op: CategoriesMenuOp.prices, index: index),
+                      child: Text('Prices'),
                     ),
                     PopupMenuItem(
                       value: CategoriesMenuData(

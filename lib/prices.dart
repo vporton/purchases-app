@@ -1,6 +1,8 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class _ShortPlaceData {
@@ -43,31 +45,21 @@ class _PricesEditState extends State<PricesEdit> {
   List<_ShortPlaceData>? places;
   List<_ShortCategoryData>? categories;
   PriceData? data = PriceData.empty();
-  String? placeName;
-  String? categoryName;
 
   void saveState(BuildContext context) {
     if (data?.placeIndex != null && data?.categoryIndex != null) {
       // TODO: `db` in principle can be yet null.
       widget.db!
-          .update(
+          .insert(
               'Product',
               {
                 'store': data!.placeIndex,
                 'category': data!.categoryIndex,
                 'price': data!.price!, // FIXME: `price` may be null.
               },
-              where: "store=? AND category=?",
-              whereArgs: [data!.placeIndex, data!.categoryIndex])
+              conflictAlgorithm: ConflictAlgorithm.replace)
           .then((c) => {});
-    } else {
-      widget.db!.insert('Product', {
-        'store': data!.placeIndex,
-        'category': data!.categoryIndex,
-        'price': data!.price!, // FIXME: `price` may be null.
-      }).then((c) => {});
     }
-
     Navigator.pop(context);
   }
 
@@ -107,10 +99,6 @@ class _PricesEditState extends State<PricesEdit> {
               .toList(growable: false);
           setState(() {
             places = newPlaces;
-            placeName = places!
-                .where((r) => r.id == data?.placeIndex)
-                .first
-                .name; // TODO: Is `data?` correct here?
           });
         });
       }
@@ -124,10 +112,6 @@ class _PricesEditState extends State<PricesEdit> {
               .toList(growable: false);
           setState(() {
             categories = newCategories;
-            categoryName = categories!
-                .where((r) => r.id == data?.categoryIndex)
-                .first
-                .name; // TODO: Is `data?` correct here?
           });
         });
       }
@@ -207,6 +191,93 @@ class _PricesEditState extends State<PricesEdit> {
           ),
         ]),
       ]),
+    );
+  }
+}
+
+class CategoryPrices extends StatefulWidget {
+  final Database? db;
+
+  const CategoryPrices({super.key, required this.db});
+
+  @override
+  State<StatefulWidget> createState() => CategoryPricesState();
+}
+
+class PriceDataWithPlaceName {
+  PriceData priceData;
+  String placeName;
+
+  PriceDataWithPlaceName({required this.priceData, required this.placeName});
+}
+
+class CategoryPricesState extends State<CategoryPrices> {
+  int? categoryId;
+  String? categoryName;
+  List<PriceDataWithPlaceName>? prices;
+
+  @override
+  Widget build(BuildContext context) {
+    var passedCategoryId = ModalRoute.of(context)!.settings.arguments as int;
+    setState(() {
+      categoryId = passedCategoryId;
+    });
+    if (widget.db != null) {
+      widget.db!
+          .query('Category',
+              columns: ['name'], where: "id=?", whereArgs: [categoryId])
+          .then((result) {
+        if (result.isNotEmpty) {
+          setState(() {
+            categoryName = result[0]['name'] as String;
+          });
+        }
+      });
+      widget.db!.rawQuery(
+          'SELECT store, price, name FROM Product INNER JOIN Place ON Product.store=Place.id WHERE category=?'
+              ' ORDER BY price ASC, name',
+          [
+            categoryId
+          ]).then((result) => setState(() {
+            prices = result
+                .map((r) => PriceDataWithPlaceName(
+                    priceData: PriceData(
+                        placeIndex: r['store'] as int,
+                        categoryIndex: passedCategoryId,
+                        price: r['price'] as double),
+                    placeName: r['name'] as String))
+                .toList(growable: false);
+          }));
+    }
+
+    final formatCurrency = NumberFormat.simpleCurrency();
+
+    return Scaffold(
+      appBar: AppBar(
+          leading: InkWell(
+              child: const Icon(Icons.arrow_circle_left),
+              onTap: () => Navigator.pop(context)),
+          title: const Text("Prices for Category")),
+      body: Column(children: [
+        Text("Category: $categoryName"),
+        Expanded(
+            child: ListView(
+          children: prices == null
+              ? []
+              : prices!
+                  .map((r) => Text(
+                      "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
+                      textScaleFactor: 2.0))
+                  .toList(growable: false),
+        ))
+      ]),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            Navigator.pushNamed(context, '/prices/edit',
+                    arguments: PriceData(categoryIndex: categoryId))
+                .then((value) {});
+          }),
     );
   }
 }
