@@ -13,5 +13,7 @@
 - Rename `store` to `shop` in DB. Possibly, also rename `Product` to `Price`.
 - IN prices per category include prices from subcategories (with small font specifying which
   subcategory).
+- Initiate Google Maps when clicking by price in category.
+- Don't store data more than 30 days as per Google Maps license.
 
 See also `TODO` and `FIXME` in the source.
