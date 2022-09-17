@@ -25,6 +25,7 @@ class MyAppState extends State<MyApp> {
   LatLng? coord;
   PlaceData? currentPlaceData; // for editing place
   CategoryData? currentCategoryData; // for editing category
+  int? currentProductId;
 
   @override
   void initState() {
@@ -48,6 +49,10 @@ class MyAppState extends State<MyApp> {
     currentCategoryData = cat;
   }
 
+  void onChooseProduct(int? productId) {
+    currentProductId = productId;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -64,6 +69,7 @@ class MyAppState extends State<MyApp> {
         '/places/edit': (context) => PlacesAddForm(db: db, place: currentPlaceData),
         '/categories': (context) => Categories(db: db, onChooseCategory: onChooseCategory),
         '/categories/edit': (context) => CategoriesEdit(db: db, category: currentCategoryData),
+        // '/products/edit': (context) => PricesEdit(db: db),
       },
     );
   }
