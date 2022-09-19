@@ -54,6 +54,7 @@ class MyAppState extends State<MyApp> {
         '/places/saved': (context) => SavedPlaces(db: db, coord: coord),
         '/places/nearby/add': (context) => PlacesAdd(db: db, coord: coord),
         '/places/edit': (context) => PlacesAddForm(db: db),
+        '/places/prices': (context) => PlacePrices(db: db),
         '/categories': (context) => Categories(db: db),
         '/categories/edit': (context) => CategoriesEdit(db: db),
         '/categories/prices': (context) => CategoryPrices(db: db),

@@ -16,10 +16,10 @@ class Categories extends StatefulWidget {
   const Categories({super.key, required this.db});
 
   @override
-  State<StatefulWidget> createState() => CategoriesState();
+  State<StatefulWidget> createState() => _CategoriesState();
 }
 
-enum CategoriesMenuOp {
+enum _CategoriesMenuOp {
   prices,
   supercategories,
   subcategories,
@@ -27,26 +27,26 @@ enum CategoriesMenuOp {
   delete
 }
 
-class CategoriesMenuData {
-  final CategoriesMenuOp op;
+class _CategoriesMenuData {
+  final _CategoriesMenuOp op;
   final int index;
 
-  const CategoriesMenuData({required this.op, required this.index});
+  const _CategoriesMenuData({required this.op, required this.index});
 }
 
-class CategoriesState extends State<Categories> {
+class _CategoriesState extends State<Categories> {
   List<CategoryData> list;
 
-  CategoriesState() : list = [];
+  _CategoriesState() : list = [];
 
-  void onMenuClicked(CategoriesMenuData item) {
+  void onMenuClicked(_CategoriesMenuData item) {
     switch (item.op) {
-      case CategoriesMenuOp.prices:
+      case _CategoriesMenuOp.prices:
         Navigator.pushNamed(context, '/categories/prices',
             arguments: list[item.index].id)
             .then((value) {});
         break;
-      case CategoriesMenuOp.edit:
+      case _CategoriesMenuOp.edit:
         Navigator.pushNamed(context, '/categories/edit',
             arguments: list[item.index])
             .then((value) {});
@@ -87,27 +87,27 @@ class CategoriesState extends State<Categories> {
               onSelected: onMenuClicked,
               itemBuilder: (BuildContext context) => [
                     PopupMenuItem(
-                      value: CategoriesMenuData(
-                          op: CategoriesMenuOp.prices, index: index),
+                      value: _CategoriesMenuData(
+                          op: _CategoriesMenuOp.prices, index: index),
                       child: Text('Prices'),
                     ),
                     PopupMenuItem(
-                      value: CategoriesMenuData(
-                          op: CategoriesMenuOp.supercategories, index: index),
+                      value: _CategoriesMenuData(
+                          op: _CategoriesMenuOp.supercategories, index: index),
                       child: Text('Supercategories'),
                     ),
                     PopupMenuItem(
-                      value: CategoriesMenuData(
-                          op: CategoriesMenuOp.subcategories, index: index),
+                      value: _CategoriesMenuData(
+                          op: _CategoriesMenuOp.subcategories, index: index),
                       child: Text('Subcategories'),
                     ),
                     PopupMenuItem(
-                        value: CategoriesMenuData(
-                            op: CategoriesMenuOp.edit, index: index),
+                        value: _CategoriesMenuData(
+                            op: _CategoriesMenuOp.edit, index: index),
                         child: Text("Edit")),
                     PopupMenuItem(
-                      value: CategoriesMenuData(
-                          op: CategoriesMenuOp.delete, index: index),
+                      value: _CategoriesMenuData(
+                          op: _CategoriesMenuOp.delete, index: index),
                       child: Text('Delete'),
                     ),
                   ]),

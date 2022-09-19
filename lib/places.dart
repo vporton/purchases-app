@@ -130,6 +130,61 @@ class _PlacesList extends StatelessWidget {
   }
 }
 
+class _SavedPlacesList extends StatelessWidget {
+  final List<PlaceData> places;
+
+  _SavedPlacesList({required this.places});
+
+  void onMenuClicked(_PlacesMenuData item, BuildContext context) {
+    switch (item.op) {
+      case _PlacesMenuOp.prices:
+        Navigator.pushNamed(context, '/places/prices',
+            arguments: places[item.index].placeId)
+            .then((value) {});
+        break;
+      case _PlacesMenuOp.edit:
+        Navigator.pushNamed(context, '/places/edit',
+            arguments: places[item.index])
+            .then((value) {});
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      separatorBuilder: (context, index) => const Divider(
+        color: Colors.black45,
+      ),
+      itemCount: places.length,
+      itemBuilder: (context, index) => InkWell(
+          child: Row(children: [
+            PopupMenuButton(
+                onSelected: (item) { onMenuClicked(item, context); },
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: _PlacesMenuData(
+                        op: _PlacesMenuOp.prices, index: index),
+                    child: Text('Prices'),
+                  ),
+                  PopupMenuItem(
+                      value: _PlacesMenuData(
+                          op: _PlacesMenuOp.edit, index: index),
+                      child: Text("Edit")),
+                  PopupMenuItem(
+                    value: _PlacesMenuData(
+                        op: _PlacesMenuOp.delete, index: index),
+                    child: Text('Delete'),
+                  ),
+                ]),
+
+            Image.network(places[index].icon.toString(), scale: 2.0),
+            Text(places[index].name, textScaleFactor: 2.0),
+          ])),
+    );
+  }
+}
+
 class PlacesAddForm extends StatefulWidget {
   final Database? db;
 
@@ -268,7 +323,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
             onTap: () => Navigator.pop(context)),
         title: const Text("Saved Places"),
       ),
-      body: _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl),
+      body: _SavedPlacesList(places: places),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
@@ -277,3 +332,17 @@ class _SavedPlacesState extends State<SavedPlaces> {
     );
   }
 }
+
+enum _PlacesMenuOp {
+  prices,
+  edit,
+  delete
+}
+
+class _PlacesMenuData {
+  final _PlacesMenuOp op;
+  final int index;
+
+  const _PlacesMenuData({required this.op, required this.index});
+}
+

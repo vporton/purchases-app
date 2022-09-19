@@ -53,7 +53,7 @@ class _PricesEditState extends State<PricesEdit> {
           .insert(
               'Product',
               {
-                'store': data!.placeIndex,
+                'shop': data!.placeIndex,
                 'category': data!.categoryIndex,
                 'price': data!.price!, // FIXME: `price` may be null.
               },
@@ -70,7 +70,7 @@ class _PricesEditState extends State<PricesEdit> {
       widget.db!
           .query('Product',
               columns: ['price'],
-              where: "store=? AND category=?",
+              where: "shop=? AND category=?",
               whereArgs: [data!.placeIndex, data!.categoryIndex])
           .then((result) {
         priceTextController.text =
@@ -225,7 +225,7 @@ class CategoryPricesState extends State<CategoryPrices> {
     if (widget.db != null) {
       widget.db!
           .query('Category',
-              columns: ['name'], where: "id=?", whereArgs: [categoryId])
+          columns: ['name'], where: "id=?", whereArgs: [categoryId])
           .then((result) {
         if (result.isNotEmpty) {
           setState(() {
@@ -234,20 +234,20 @@ class CategoryPricesState extends State<CategoryPrices> {
         }
       });
       widget.db!.rawQuery(
-          'SELECT store, price, name FROM Product INNER JOIN Place ON Product.store=Place.id WHERE category=?'
+          'SELECT shop, price, name FROM Product INNER JOIN Place ON Product.shop=Place.id WHERE category=?'
               ' ORDER BY price ASC, name',
           [
             categoryId
           ]).then((result) => setState(() {
-            prices = result
-                .map((r) => PriceDataWithPlaceName(
-                    priceData: PriceData(
-                        placeIndex: r['store'] as int,
-                        categoryIndex: passedCategoryId,
-                        price: r['price'] as double),
-                    placeName: r['name'] as String))
-                .toList(growable: false);
-          }));
+        prices = result
+            .map((r) => PriceDataWithPlaceName(
+            priceData: PriceData(
+                placeIndex: r['shop'] as int,
+                categoryIndex: passedCategoryId,
+                price: r['price'] as double),
+            placeName: r['name'] as String))
+            .toList(growable: false);
+      }));
     }
 
     final formatCurrency = NumberFormat.simpleCurrency();
@@ -262,20 +262,107 @@ class CategoryPricesState extends State<CategoryPrices> {
         Text("Category: $categoryName"),
         Expanded(
             child: ListView(
-          children: prices == null
-              ? []
-              : prices!
+              children: prices == null
+                  ? []
+                  : prices!
                   .map((r) => Text(
-                      "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
-                      textScaleFactor: 2.0))
+                  "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
+                  textScaleFactor: 2.0))
                   .toList(growable: false),
-        ))
+            ))
       ]),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, '/prices/edit',
-                    arguments: PriceData(categoryIndex: categoryId))
+                arguments: PriceData(categoryIndex: categoryId))
+                .then((value) {});
+          }),
+    );
+  }
+}
+
+class PlacePrices extends StatefulWidget {
+  final Database? db;
+
+  const PlacePrices({super.key, required this.db});
+
+  @override
+  State<StatefulWidget> createState() => PlacePricesState();
+}
+
+class PriceDataWithCategoryName {
+  PriceData priceData;
+  String categoryName;
+
+  PriceDataWithCategoryName({required this.priceData, required this.categoryName});
+}
+
+class PlacePricesState extends State<PlacePrices> {
+  int? placeId;
+  String? placeName;
+  List<PriceDataWithCategoryName>? prices;
+
+  @override
+  Widget build(BuildContext context) {
+    var passedPlaceId = ModalRoute.of(context)!.settings.arguments as int;
+    setState(() {
+      placeId = passedPlaceId;
+    });
+    if (widget.db != null) {
+      widget.db!
+          .query('Place',
+          columns: ['name'], where: "id=?", whereArgs: [placeId])
+          .then((result) {
+        if (result.isNotEmpty) {
+          setState(() {
+            placeName = result[0]['name'] as String;
+          });
+        }
+      });
+      widget.db!.rawQuery(
+          'SELECT category, price, name FROM Product INNER JOIN Category ON Product.category=Category.id WHERE shop=?'
+              ' ORDER BY price ASC, name',
+          [
+            placeId
+          ]).then((result) => setState(() {
+        prices = result
+            .map((r) => PriceDataWithCategoryName(
+            priceData: PriceData(
+                categoryIndex: r['category'] as int,
+                placeIndex: passedPlaceId,
+                price: r['price'] as double),
+            categoryName: r['name'] as String))
+            .toList(growable: false);
+      }));
+    }
+
+    final formatCurrency = NumberFormat.simpleCurrency();
+
+    return Scaffold(
+      appBar: AppBar(
+          leading: InkWell(
+              child: const Icon(Icons.arrow_circle_left),
+              onTap: () => Navigator.pop(context)),
+          title: const Text("Prices in Shop")),
+      body: Column(children: [
+        Text("Shop: $placeName"),
+        Expanded(
+            child: ListView(
+              children: prices == null
+                  ? []
+                  : prices!
+                  .map((r) => Text(
+                  "${formatCurrency.format(r.priceData.price)} ${r.categoryName}",
+                  textScaleFactor: 2.0))
+                  .toList(growable: false),
+            ))
+      ]),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            Navigator.pushNamed(context, '/prices/edit',
+                arguments: PriceData(placeIndex: placeId))
                 .then((value) {});
           }),
     );
