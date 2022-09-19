@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:collection/collection.dart';
 
 class _ShortPlaceData {
   int id;
@@ -225,7 +226,7 @@ class CategoryPricesState extends State<CategoryPrices> {
     if (widget.db != null) {
       widget.db!
           .query('Category',
-          columns: ['name'], where: "id=?", whereArgs: [categoryId])
+              columns: ['name'], where: "id=?", whereArgs: [categoryId])
           .then((result) {
         if (result.isNotEmpty) {
           setState(() {
@@ -235,19 +236,19 @@ class CategoryPricesState extends State<CategoryPrices> {
       });
       widget.db!.rawQuery(
           'SELECT shop, price, name FROM Product INNER JOIN Place ON Product.shop=Place.id WHERE category=?'
-              ' ORDER BY price ASC, name',
+          ' ORDER BY price ASC, name',
           [
             categoryId
           ]).then((result) => setState(() {
-        prices = result
-            .map((r) => PriceDataWithPlaceName(
-            priceData: PriceData(
-                placeIndex: r['shop'] as int,
-                categoryIndex: passedCategoryId,
-                price: r['price'] as double),
-            placeName: r['name'] as String))
-            .toList(growable: false);
-      }));
+            prices = result
+                .map((r) => PriceDataWithPlaceName(
+                    priceData: PriceData(
+                        placeIndex: r['shop'] as int,
+                        categoryIndex: passedCategoryId,
+                        price: r['price'] as double),
+                    placeName: r['name'] as String))
+                .toList(growable: false);
+          }));
     }
 
     final formatCurrency = NumberFormat.simpleCurrency();
@@ -262,20 +263,20 @@ class CategoryPricesState extends State<CategoryPrices> {
         Text("Category: $categoryName"),
         Expanded(
             child: ListView(
-              children: prices == null
-                  ? []
-                  : prices!
+          children: prices == null
+              ? []
+              : prices!
                   .map((r) => Text(
-                  "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
-                  textScaleFactor: 2.0))
+                      "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
+                      textScaleFactor: 2.0))
                   .toList(growable: false),
-            ))
+        ))
       ]),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, '/prices/edit',
-                arguments: PriceData(categoryIndex: categoryId))
+                    arguments: PriceData(categoryIndex: categoryId))
                 .then((value) {});
           }),
     );
@@ -295,13 +296,33 @@ class PriceDataWithCategoryName {
   PriceData priceData;
   String categoryName;
 
-  PriceDataWithCategoryName({required this.priceData, required this.categoryName});
+  PriceDataWithCategoryName(
+      {required this.priceData, required this.categoryName});
+}
+
+enum _PlacePricesMenuOp { edit, delete }
+
+class _PlacePricesMenuData {
+  final _PlacePricesMenuOp op;
+  final int index;
+
+  const _PlacePricesMenuData({required this.op, required this.index});
 }
 
 class PlacePricesState extends State<PlacePrices> {
   int? placeId;
   String? placeName;
   List<PriceDataWithCategoryName>? prices;
+
+  void onMenuClicked(_PlacePricesMenuData item, BuildContext context) {
+    switch (item.op) {
+      case _PlacePricesMenuOp.edit:
+        Navigator.pushNamed(context, '/prices/edit',
+                arguments: prices![item.index].priceData) // TODO: `!`?
+            .then((value) {});
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -312,7 +333,7 @@ class PlacePricesState extends State<PlacePrices> {
     if (widget.db != null) {
       widget.db!
           .query('Place',
-          columns: ['name'], where: "id=?", whereArgs: [placeId])
+              columns: ['name'], where: "id=?", whereArgs: [placeId])
           .then((result) {
         if (result.isNotEmpty) {
           setState(() {
@@ -322,19 +343,19 @@ class PlacePricesState extends State<PlacePrices> {
       });
       widget.db!.rawQuery(
           'SELECT category, price, name FROM Product INNER JOIN Category ON Product.category=Category.id WHERE shop=?'
-              ' ORDER BY price ASC, name',
+          ' ORDER BY price ASC, name',
           [
             placeId
           ]).then((result) => setState(() {
-        prices = result
-            .map((r) => PriceDataWithCategoryName(
-            priceData: PriceData(
-                categoryIndex: r['category'] as int,
-                placeIndex: passedPlaceId,
-                price: r['price'] as double),
-            categoryName: r['name'] as String))
-            .toList(growable: false);
-      }));
+            prices = result
+                .map((r) => PriceDataWithCategoryName(
+                    priceData: PriceData(
+                        categoryIndex: r['category'] as int,
+                        placeIndex: passedPlaceId,
+                        price: r['price'] as double),
+                    categoryName: r['name'] as String))
+                .toList(growable: false);
+          }));
     }
 
     final formatCurrency = NumberFormat.simpleCurrency();
@@ -349,20 +370,37 @@ class PlacePricesState extends State<PlacePrices> {
         Text("Shop: $placeName"),
         Expanded(
             child: ListView(
-              children: prices == null
-                  ? []
-                  : prices!
-                  .map((r) => Text(
-                  "${formatCurrency.format(r.priceData.price)} ${r.categoryName}",
-                  textScaleFactor: 2.0))
+          children: prices == null
+              ? []
+              : prices!
+                  .mapIndexed((index, r) => Row(children: [
+                        PopupMenuButton(
+                            onSelected: (item) {
+                              onMenuClicked(item, context);
+                            },
+                            itemBuilder: (BuildContext context) => [
+                                  PopupMenuItem(
+                                      value: _PlacePricesMenuData(
+                                          op: _PlacePricesMenuOp.edit, index: index),
+                                      child: Text("Edit")),
+                                  PopupMenuItem(
+                                    value: _PlacePricesMenuData(
+                                        op: _PlacePricesMenuOp.delete, index: index),
+                                    child: Text('Delete'),
+                                  ),
+                                ]),
+                        Text(
+                            "${formatCurrency.format(r.priceData.price)} ${r.categoryName}",
+                            textScaleFactor: 2.0)
+                      ]))
                   .toList(growable: false),
-            ))
+        ))
       ]),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, '/prices/edit',
-                arguments: PriceData(placeIndex: placeId))
+                    arguments: PriceData(placeIndex: placeId))
                 .then((value) {});
           }),
     );
