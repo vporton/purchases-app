@@ -17,6 +17,7 @@ class PlacesAdd extends StatefulWidget {
 }
 
 class PlaceData {
+  int? id;
   final String placeId;
   String name;
   String description;
@@ -26,7 +27,8 @@ class PlaceData {
   // TODO: business_status == "OPERATIONAL"
 
   PlaceData(
-      {required this.placeId,
+      {this.id,
+      required this.placeId,
       required this.name,
       required this.description,
       required this.location,
@@ -46,12 +48,14 @@ class _PlacesAddState extends State<PlacesAdd> {
 
   void onChoosePlaceImpl(PlaceData place, BuildContext context) {
     // Below warrants `widget.db != null`.
-    Navigator.pushNamed(context, '/places/edit', arguments: place).then((value) {});
+    Navigator.pushNamed(context, '/places/edit', arguments: place)
+        .then((value) {});
   }
 
   @override
   Widget build(BuildContext context) {
-    var passedCoord = ModalRoute.of(context)!.settings.arguments as LatLng; // FIXME: It may be null.
+    var passedCoord = ModalRoute.of(context)!.settings.arguments
+        as LatLng; // FIXME: It may be null.
     if (passedCoord != coord) {
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
       if (passedCoord != null && widget.db != null) {
@@ -139,12 +143,12 @@ class _SavedPlacesList extends StatelessWidget {
     switch (item.op) {
       case _PlacesMenuOp.prices:
         Navigator.pushNamed(context, '/places/prices',
-            arguments: places[item.index].placeId)
+                arguments: places[item.index].id)
             .then((value) {});
         break;
       case _PlacesMenuOp.edit:
         Navigator.pushNamed(context, '/places/edit',
-            arguments: places[item.index])
+                arguments: places[item.index])
             .then((value) {});
         break;
     }
@@ -157,30 +161,30 @@ class _SavedPlacesList extends StatelessWidget {
         color: Colors.black45,
       ),
       itemCount: places.length,
-      itemBuilder: (context, index) => InkWell(
-          child: Row(children: [
-            PopupMenuButton(
-                onSelected: (item) { onMenuClicked(item, context); },
-                itemBuilder: (BuildContext context) => [
+      itemBuilder: (context, index) => Row(children: [
+        PopupMenuButton(
+            onSelected: (item) {
+              onMenuClicked(item, context);
+            },
+            itemBuilder: (BuildContext context) => [
                   PopupMenuItem(
-                    value: _PlacesMenuData(
-                        op: _PlacesMenuOp.prices, index: index),
+                    value:
+                        _PlacesMenuData(op: _PlacesMenuOp.prices, index: index),
                     child: Text('Prices'),
                   ),
                   PopupMenuItem(
-                      value: _PlacesMenuData(
-                          op: _PlacesMenuOp.edit, index: index),
+                      value:
+                          _PlacesMenuData(op: _PlacesMenuOp.edit, index: index),
                       child: Text("Edit")),
                   PopupMenuItem(
-                    value: _PlacesMenuData(
-                        op: _PlacesMenuOp.delete, index: index),
+                    value:
+                        _PlacesMenuData(op: _PlacesMenuOp.delete, index: index),
                     child: Text('Delete'),
                   ),
                 ]),
-
-            Image.network(places[index].icon.toString(), scale: 2.0),
-            Text(places[index].name, textScaleFactor: 2.0),
-          ])),
+        Image.network(places[index].icon.toString(), scale: 2.0),
+        Text(places[index].name, textScaleFactor: 2.0),
+      ]),
     );
   }
 }
@@ -198,8 +202,7 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
   PlaceData? place;
 
   @override
-  void initState() {
-  }
+  void initState() {}
 
   void saveState(BuildContext context) {
     widget.db!
@@ -283,13 +286,15 @@ class _SavedPlacesState extends State<SavedPlaces> {
   Widget build(BuildContext context) {
     void onChoosePlaceImpl(PlaceData place, BuildContext context) {
       // Below warrants `widget.db != null`.
-      Navigator.pushNamed(context, '/places/edit', arguments: place).then((value) {});
+      Navigator.pushNamed(context, '/places/edit', arguments: place)
+          .then((value) {});
     }
 
     if (widget.db != null) {
       widget.db!
           .query('Place',
               columns: [
+                'id',
                 'google_id',
                 'name',
                 'description',
@@ -301,6 +306,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
           .then((result) {
         var newPlaces = result
             .map((row) => PlaceData(
+                id: row['id'] as int,
                 placeId: row['google_id'] as String,
                 name: row['name'] as String,
                 description: row['description'] as String,
@@ -327,17 +333,15 @@ class _SavedPlacesState extends State<SavedPlaces> {
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            Navigator.pushNamed(context, '/places/nearby/add', arguments: widget.coord).then((value) {});
+            Navigator.pushNamed(context, '/places/nearby',
+                    arguments: widget.coord)
+                .then((value) {});
           }),
     );
   }
 }
 
-enum _PlacesMenuOp {
-  prices,
-  edit,
-  delete
-}
+enum _PlacesMenuOp { prices, edit, delete }
 
 class _PlacesMenuData {
   final _PlacesMenuOp op;
@@ -345,4 +349,3 @@ class _PlacesMenuData {
 
   const _PlacesMenuData({required this.op, required this.index});
 }
-

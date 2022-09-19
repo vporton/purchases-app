@@ -305,7 +305,7 @@ class PlacePricesState extends State<PlacePrices> {
 
   @override
   Widget build(BuildContext context) {
-    var passedPlaceId = ModalRoute.of(context)!.settings.arguments as int;
+    var passedPlaceId = ModalRoute.of(context)!.settings.arguments as int?;
     setState(() {
       placeId = passedPlaceId;
     });

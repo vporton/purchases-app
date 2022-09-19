@@ -52,7 +52,7 @@ class MyAppState extends State<MyApp> {
       routes: {
         '/map': (context) => MyHomePage(onMove: onMove),
         '/places/saved': (context) => SavedPlaces(db: db, coord: coord),
-        '/places/nearby/add': (context) => PlacesAdd(db: db, coord: coord),
+        '/places/nearby': (context) => PlacesAdd(db: db, coord: coord),
         '/places/edit': (context) => PlacesAddForm(db: db),
         '/places/prices': (context) => PlacePrices(db: db),
         '/categories': (context) => Categories(db: db),
@@ -68,12 +68,6 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, this.onMove});
 
   final Function(LatLng)? onMove;
-
-  void onMoveImpl(LatLng coord) {
-    if (onMove != null) {
-      onMove!(coord);
-    }
-  }
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -106,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.place),
               title: const Text("Nearby places"),
               onTap: () {
-                Navigator.pushNamed(context, '/places/nearby/add').then((value) {});
+                Navigator.pushNamed(context, '/places/nearby', arguments: coord).then((value) {});
               }),
           ListTile(
               leading: const Icon(Icons.save),
@@ -131,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ]),
       ),
       body: Center(
-        child: MyMap(onMove: widget.onMoveImpl),
+        child: MyMap(onMove: onMoveImpl),
       ),
     );
   }
