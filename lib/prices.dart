@@ -382,11 +382,11 @@ class PlacePricesState extends State<PlacePrices> {
                                   PopupMenuItem(
                                       value: _PlacePricesMenuData(
                                           op: _PlacePricesMenuOp.edit, index: index),
-                                      child: Text("Edit")),
+                                      child: const Text("Edit")),
                                   PopupMenuItem(
                                     value: _PlacePricesMenuData(
                                         op: _PlacePricesMenuOp.delete, index: index),
-                                    child: Text('Delete'),
+                                    child: const Text('Delete'),
                                   ),
                                 ]),
                         Text(
