@@ -284,12 +284,6 @@ class _SavedPlacesState extends State<SavedPlaces> {
 
   @override
   Widget build(BuildContext context) {
-    void onChoosePlaceImpl(PlaceData place, BuildContext context) {
-      // Below warrants `widget.db != null`.
-      Navigator.pushNamed(context, '/places/edit', arguments: place)
-          .then((value) {});
-    }
-
     if (widget.db != null) {
       widget.db!
           .query('Place',
