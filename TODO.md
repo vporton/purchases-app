@@ -15,7 +15,7 @@
   subcategory).
 - Initiate Google Maps when clicking by price in category.
 - Don't store data more than 30 days as per Google Maps license.
-- Limit amount of money spent by hidding Google API behind my own proxy server, sell in app
+- Limit amount of money spent by hiding Google API behind my own proxy server, sell in app
   access to that server.
 - Use `AlertDialog` to show warning if checking a super/sub- category checkbox also checks other
   checkboxes, give the option to cancel checking.
