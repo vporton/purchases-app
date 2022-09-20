@@ -57,6 +57,9 @@ class _PlacesAddState extends State<PlacesAdd> {
     var passedCoord = ModalRoute.of(context)!.settings.arguments
         as LatLng; // FIXME: It may be null.
     if (passedCoord != coord) {
+      setState(() {
+        coord = passedCoord;
+      });
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
       if (passedCoord != null && widget.db != null) {
         final mapsPlaces = GoogleMapsPlaces(
