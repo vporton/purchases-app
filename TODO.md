@@ -16,6 +16,5 @@
   subcategory).
 - Initiate Google Maps when clicking by price in category.
 - Don't store data more than 30 days as per Google Maps license.
-- Configure using GOOGLE_MAPS_API_KEY for iOS.
 
 See also `TODO` and `FIXME` in the source.
