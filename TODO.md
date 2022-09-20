@@ -16,5 +16,7 @@
   subcategory).
 - Initiate Google Maps when clicking by price in category.
 - Don't store data more than 30 days as per Google Maps license.
+- Limit amount of money spent by hidding Google API behind my own proxy server, sell in app
+  access to that server.
 
 See also `TODO` and `FIXME` in the source.
