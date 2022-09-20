@@ -11,6 +11,6 @@
         android:label="purchases"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAxoZq6z9N7TnBfHbDZA3_3QJGGnKduaXM"/>
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="${GOOGLE_MAPS_API_KEY}"/>
     </application>
 </manifest>
