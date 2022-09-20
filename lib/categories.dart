@@ -89,7 +89,7 @@ class _CategoriesState extends State<Categories> {
                     PopupMenuItem(
                       value: _CategoriesMenuData(
                           op: _CategoriesMenuOp.prices, index: index),
-                      child: Text('Prices'),
+                      child: Text('Best prices'),
                     ),
                     PopupMenuItem(
                       value: _CategoriesMenuData(
