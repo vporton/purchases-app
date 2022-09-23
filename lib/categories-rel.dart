@@ -187,7 +187,7 @@ class _CategoriesRelListState extends State<_CategoriesRelList> {
     if (resultChecked.isNotEmpty) {
       final relationsStr = resultChecked
           .map((r) => "${r['name1'] as String} -> ${r['name2'] as String}")
-          .join("; ");
+          .join("\n");
       final addDialogResponse = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
