@@ -1,8 +1,9 @@
-- Display places on the map.
+- Display places on the map (required updating at least per 30 days by Google's license).
 - My errors explained in https://stackoverflow.com/a/73749826/856090
 - Autocomplete search for places.
 - Deleting places and categories, deleting prices.
 - Validate that place name or category name is non-empty.
+- Validate price entry textfield.
 - What to do with duplicate names of objects?
 - Use widget keys?
 - Help.
