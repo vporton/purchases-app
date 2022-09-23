@@ -110,10 +110,10 @@ class _CategoriesRelListState extends State<_CategoriesRelList> {
     var result1 = await widget.db!
         .query('Category', columns: ['id', 'name'], orderBy: 'name');
     var result2 = await widget.db!.query('CategoryRel',
-        columns: ['id', widget.forwardColumn],
+        columns: [widget.forwardColumn],
         where: "${widget.backwardColumn}=? AND ${widget.forwardColumn}!=?",
         whereArgs: [widget.categoryId, widget.categoryId]);
-    var set = {for (var e in result2) e['id'] as int};
+    var set = {for (var e in result2) e[widget.forwardColumn] as int};
     var ordered = result1
         .where((value) => value['id'] as int != widget.categoryId)
         .map((value) => _CategoriesRelListStateValue2(
