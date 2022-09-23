@@ -6,6 +6,7 @@ import 'package:purchases/prices.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'categories-rel.dart';
 import 'db.dart';
 import 'categories.dart';
 
@@ -57,6 +58,18 @@ class MyAppState extends State<MyApp> {
         '/places/prices': (context) => PlacePrices(db: db),
         '/categories': (context) => Categories(db: db),
         '/categories/edit': (context) => CategoriesEdit(db: db),
+        '/categories/sub': (context) => CategoriesRel(
+            db: db,
+            forwardColumn: 'sub',
+            backwardColumn: 'super',
+            title: 'Edit subcategories',
+            relText: 'Subcategories'),
+        '/categories/super': (context) => CategoriesRel(
+            db: db,
+            forwardColumn: 'super',
+            backwardColumn: 'sub',
+            title: 'Edit supercategories',
+            relText: 'Supercategories'),
         '/categories/prices': (context) => CategoryPrices(db: db),
         '/prices/edit': (context) => PricesEdit(db: db),
       },
@@ -100,7 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.place),
               title: const Text("Nearby places"),
               onTap: () {
-                Navigator.pushNamed(context, '/places/nearby', arguments: coord).then((value) {});
+                Navigator.pushNamed(context, '/places/nearby', arguments: coord)
+                    .then((value) {});
               }),
           ListTile(
               leading: const Icon(Icons.save),

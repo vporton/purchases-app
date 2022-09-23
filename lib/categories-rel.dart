@@ -49,12 +49,13 @@ class CategoriesRelState extends State<CategoriesRel> {
         title: Text(widget.title),
       ),
       body: Column(children: [
-        Text(categoryName != null ? "${widget.relText} of $categoryName" : ""),
-        _CategoriesRelList(
+        Text(categoryName != null ? "${widget.relText} of $categoryName:" : ""),
+        Expanded(child: _CategoriesRelList(
             db: widget.db,
             forwardColumn: widget.forwardColumn,
             backwardColumn: widget.backwardColumn,
             categoryId: categoryId)
+        )
       ]),
     );
   }

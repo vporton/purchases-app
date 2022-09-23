@@ -19,13 +19,7 @@ class Categories extends StatefulWidget {
   State<StatefulWidget> createState() => _CategoriesState();
 }
 
-enum _CategoriesMenuOp {
-  prices,
-  supercategories,
-  subcategories,
-  edit,
-  delete
-}
+enum _CategoriesMenuOp { prices, supercategories, subcategories, edit, delete }
 
 class _CategoriesMenuData {
   final _CategoriesMenuOp op;
@@ -43,12 +37,22 @@ class _CategoriesState extends State<Categories> {
     switch (item.op) {
       case _CategoriesMenuOp.prices:
         Navigator.pushNamed(context, '/categories/prices',
-            arguments: list[item.index].id)
+                arguments: list[item.index].id)
+            .then((value) {});
+        break;
+      case _CategoriesMenuOp.supercategories:
+        Navigator.pushNamed(context, '/categories/super',
+                arguments: list[item.index].id)
+            .then((value) {});
+        break;
+      case _CategoriesMenuOp.subcategories:
+        Navigator.pushNamed(context, '/categories/sub',
+                arguments: list[item.index].id)
             .then((value) {});
         break;
       case _CategoriesMenuOp.edit:
         Navigator.pushNamed(context, '/categories/edit',
-            arguments: list[item.index])
+                arguments: list[item.index])
             .then((value) {});
         break;
     }
