@@ -272,7 +272,7 @@ class CategoryPricesState extends State<CategoryPrices> {
           leading: InkWell(
               child: const Icon(Icons.arrow_circle_left),
               onTap: () => Navigator.pop(context)),
-          title: const Text("Best prices for Category")),
+          title: const Text("Best prices for category")),
       body: Column(children: [
         Text("Category: $categoryName"),
         Expanded(
