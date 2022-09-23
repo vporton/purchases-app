@@ -179,15 +179,15 @@ class _CategoriesRelListState extends State<_CategoriesRelList> {
 
     // transitive closure
     var resultChecked = await widget.db!.rawQuery(
-      "SELECT c1.name name1, c2.name name2, c1.id bc, c2.id fc FROM Category c1 INNER JOIN Category c2 ON "
-      "EXISTS(SELECT * FROM CategoryRel WHERE (${widget.backwardColumn}=bc AND ${widget.forwardColumn}=?) OR ${widget.forwardColumn}=bc) AND "
-      "EXISTS(SELECT * FROM CategoryRel WHERE (${widget.backwardColumn}=? AND ${widget.forwardColumn}=fc) OR ${widget.backwardColumn}=fc) "
-      "WHERE c1.id!=c2.id",
-      [widget.categoryId, forwardCategory],
+      "SELECT DISTINCT c1.name name1, c2.name name2, c1.id bc, c2.id fc FROM Category c1 INNER JOIN Category c2 ON "
+      "(EXISTS(SELECT * FROM CategoryRel WHERE ${widget.backwardColumn}=bc AND ${widget.forwardColumn}=?) OR bc=?) AND "
+      "(EXISTS(SELECT * FROM CategoryRel WHERE ${widget.backwardColumn}=? AND ${widget.forwardColumn}=fc) OR fc=?) "
+      "WHERE c1.id!=c2.id AND NOT(EXISTS(SELECT * FROM CategoryRel WHERE ${widget.backwardColumn}=bc AND ${widget.forwardColumn}=fc))",
+      [widget.categoryId, widget.categoryId, forwardCategory, forwardCategory],
     );
-    if (resultChecked.isNotEmpty) {
+    if (resultChecked.length > 1) {
       final relationsStr = resultChecked
-          .map((r) => "${r['name2'] as String} -> ${r['name1'] as String}")
+          .map((r) => "${r['name1'] as String} -> ${r['name2'] as String}")
           .join("\n");
       final addDialogResponse = await showDialog<bool>(
         context: context,
@@ -212,14 +212,10 @@ class _CategoriesRelListState extends State<_CategoriesRelList> {
       }
     }
     Batch batch = widget.db!.batch();
-    batch.insert('CategoryRel', {
-      widget.backwardColumn: widget.categoryId,
-      widget.forwardColumn: forwardCategory
-    });
     for (var e in resultChecked) {
       widget.db!.insert('CategoryRel', {
         widget.backwardColumn: e['bc'] as int,
-        widget.forwardColumn: e['fc'] as int
+        widget.forwardColumn: e['fc'] as int,
       });
     }
     await batch.commit(noResult: true);
