@@ -1,3 +1,4 @@
+- Display places on the map.
 - https://github.com/googlecodelabs/google-maps-web-services-proxy
 - My errors explained in https://stackoverflow.com/a/73749826/856090
 - Autocomplete search for places.
