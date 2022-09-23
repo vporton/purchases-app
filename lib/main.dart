@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:purchases/map.dart';
 import 'package:purchases/places.dart';
 import 'package:purchases/prices.dart';
@@ -17,23 +18,43 @@ class _Dummy {
   _Dummy();
 }
 
-Future<_Dummy> _googleMapsReloadAsync() async {
-  // TODO
+Future<_Dummy> _googleMapsReload(Database db) async {
+  const waitPeriod = Duration(days: 20);
+  for (;;) {
+    var result = await db.query(
+        'Place', columns: ['id', 'google_id', 'updated'],
+        orderBy: 'updated',
+        limit: 1);
+    if (result.isEmpty) {
+      await db.delete('Place', where: 'id=?', whereArgs: [result[0]['id'] as int]);
+    } else {
+      final mapsPlaces = GoogleMapsPlaces(
+        // TODO: Don't call every time.
+          apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
+      // FIXME: Handle errors.
+      var response = await mapsPlaces.getDetailsByPlaceId(
+          result[0]['google_id'] as String,
+          fields: ['place_id', 'geometry/location', 'icon']);
+      if (response.hasNoResults) {
+        await db.delete('Place', where: 'id=?', whereArgs: [result[0]['id'] as int]);
+      } else {
+        await db.update('Place', {
+          'updated': DateTime.now(),
+          'google_id': response.result.placeId,
+          'lat': response.result.geometry!.location.lat,
+          'lng': response.result.geometry!.location.lng,
+          'icon_url': response.result.icon,
+        });
+      }
+      await Future.delayed(waitPeriod);
+    }
+  }
   return _Dummy();
 }
 
-void _googleMapsReload(_Dummy n) {
-  _googleMapsReloadAsync().then((v) {});
-  sleep(const Duration(days: int64MaxValue)); // TODO: This does not work with JS target.
-}
-
 void main() async {
-  // var receivePort = ReceivePort();
-  // var thread = Isolate(receivePort.sendPort);
-  var thread = await Isolate.spawn(_googleMapsReload, _Dummy());
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
-  thread.kill(priority: Isolate.immediate);
 }
 
 class MyApp extends StatefulWidget {
@@ -50,8 +71,10 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    myOpenDatabase().then((db) => setState(() {
+    myOpenDatabase().then((db) =>
+        setState(() {
           this.db = db;
+          _googleMapsReload(db).then((v) {});
         }));
   }
 
@@ -79,14 +102,16 @@ class MyAppState extends State<MyApp> {
         '/places/prices': (context) => PlacePrices(db: db),
         '/categories': (context) => Categories(db: db),
         '/categories/edit': (context) => CategoriesEdit(db: db),
-        '/categories/sub': (context) => CategoriesRel(
-            db: db,
-            forwardColumn: 'sub',
-            backwardColumn: 'super',
-            title: 'Edit subcategories',
-            relText: 'Subcategories',
-            relText2: 'subcategory'),
-        '/categories/super': (context) => CategoriesRel(
+        '/categories/sub': (context) =>
+            CategoriesRel(
+                db: db,
+                forwardColumn: 'sub',
+                backwardColumn: 'super',
+                title: 'Edit subcategories',
+                relText: 'Subcategories',
+                relText2: 'subcategory'),
+        '/categories/super': (context) =>
+            CategoriesRel(
               db: db,
               forwardColumn: 'super',
               backwardColumn: 'sub',
@@ -157,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text("Prices"),
               onTap: () {
                 Navigator.pushNamed(context, '/prices/edit',
-                        arguments: PriceData.empty())
+                    arguments: PriceData.empty())
                     .then((value) {});
               }),
         ]),
