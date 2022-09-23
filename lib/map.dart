@@ -19,6 +19,7 @@ class MyMap extends StatefulWidget {
 }
 
 class _PlaceInfo {
+  int id;
   final String googleId;
   final String name;
   final String iconUrl;
@@ -26,7 +27,8 @@ class _PlaceInfo {
   final double lng;
 
   _PlaceInfo(
-      {required this.googleId,
+      {required this.id,
+      required this.googleId,
       required this.name,
       required this.iconUrl,
       required this.lat,
@@ -77,9 +79,10 @@ class MyMapState extends State<MyMap> {
     }
 
     if (widget.db != null) {
-      var results = widget.db!.query('Place',
+      widget.db!.query('Place',
           // TODO: Is 'name' really needed?
           columns: [
+            'id',
             'google_id',
             'name',
             'icon_url',
@@ -89,6 +92,7 @@ class MyMapState extends State<MyMap> {
           ]).then((results) {
         final newPlaces = results
             .map((r) => _PlaceInfo(
+                id: r['id'] as int,
                 googleId: r['google_id'] as String,
                 name: r['name'] as String,
                 iconUrl: r['icon_url'] as String,
@@ -98,8 +102,7 @@ class MyMapState extends State<MyMap> {
         var eq = const ListEquality().equals;
         if (!eq(places, newPlaces)) {
           MarkerIcon.pictureAsset(
-                  width: 100, height: 100,
-                  assetPath: 'media/marker.png')
+                  width: 100, height: 100, assetPath: 'media/marker.png')
               .then((icon) {
             setState(() {
               places = newPlaces;
@@ -112,7 +115,11 @@ class MyMapState extends State<MyMap> {
                         // infoWindow: TODO,
                         position: LatLng(v.lat, v.lng),
                         zIndex: 1000001,
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, '/places/prices',
+                                  arguments: v.id)
+                              .then((value) {});
+                        },
                       ))
                   .toSet();
             });
