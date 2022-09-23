@@ -19,5 +19,6 @@
   access to that server.
 - Use `AlertDialog` to show warning if checking a super/sub- category checkbox also checks other
   checkboxes, give the option to cancel checking.
+- Use `ListTile` class where appropriate.
 
 See also `TODO` and `FIXME` in the source.
