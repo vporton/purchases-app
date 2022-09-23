@@ -180,20 +180,21 @@ class _CategoriesRelListState extends State<_CategoriesRelList> {
     // transitive closure
     var resultChecked = await widget.db!.rawQuery(
       "SELECT c1.name name1, c2.name name2, c1.id bc, c2.id fc FROM Category c1 INNER JOIN Category c2 ON "
-      "EXISTS(SELECT * FROM CategoryRel WHERE ${widget.backwardColumn}=bc AND ${widget.forwardColumn}=?) AND "
-      "EXISTS(SELECT * FROM CategoryRel WHERE ${widget.backwardColumn}=? AND ${widget.forwardColumn}=fc)",
+      "EXISTS(SELECT * FROM CategoryRel WHERE (${widget.backwardColumn}=bc AND ${widget.forwardColumn}=?) OR ${widget.forwardColumn}=bc) AND "
+      "EXISTS(SELECT * FROM CategoryRel WHERE (${widget.backwardColumn}=? AND ${widget.forwardColumn}=fc) OR ${widget.backwardColumn}=fc) "
+      "WHERE c1.id!=c2.id",
       [widget.categoryId, forwardCategory],
     );
     if (resultChecked.isNotEmpty) {
       final relationsStr = resultChecked
-          .map((r) => "${r['name1'] as String} -> ${r['name2'] as String}")
+          .map((r) => "${r['name2'] as String} -> ${r['name1'] as String}")
           .join("\n");
       final addDialogResponse = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Add relations?'),
           content: Text(
-              "Add also the following subcategory relations:\n$relationsStr"),
+              "Add the following subcategory relations:\n$relationsStr"),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, false),
