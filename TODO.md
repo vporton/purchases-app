@@ -1,25 +1,20 @@
 - Display places on the map.
-- https://github.com/googlecodelabs/google-maps-web-services-proxy
 - My errors explained in https://stackoverflow.com/a/73749826/856090
 - Autocomplete search for places.
-- Deleting places and categories.
-- Validate that place name is non-empty.
+- Deleting places and categories, deleting prices.
+- Validate that place name or category name is non-empty.
 - What to do with duplicate names of objects?
-- Use widget keys.
-- Cursor jumps to the leftmost position after typing each character in Edit Place.
-- Editing sub/super- categories.
+- Use widget keys?
 - Help.
 - How to dispose `TextEditingController`?
 - It allows to enter only whole numbers as prices.
 - Added place does not appear in Saved Places without "refresh" (closing Saved Places).
-- IN prices per category include prices from subcategories (with small font specifying which
+- In prices per category include prices from subcategories (with small font specifying which
   subcategory).
 - Initiate Google Maps when clicking by price in category.
 - Don't store data more than 30 days as per Google Maps license.
 - Limit amount of money spent by hiding Google API behind my own proxy server, sell in app
   access to that server.
-- Use `AlertDialog` to show warning if checking a super/sub- category checkbox also checks other
-  checkboxes, give the option to cancel checking.
 - Use `ListTile` class where appropriate.
 
 See also `TODO` and `FIXME` in the source.
