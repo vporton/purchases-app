@@ -208,8 +208,12 @@ class CategoryPrices extends StatefulWidget {
 class PriceDataWithPlaceName {
   PriceData priceData;
   String placeName;
+  String productName;
 
-  PriceDataWithPlaceName({required this.priceData, required this.placeName});
+  PriceDataWithPlaceName(
+      {required this.priceData,
+      required this.placeName,
+      required this.productName});
 }
 
 class CategoryPricesState extends State<CategoryPrices> {
@@ -235,10 +239,19 @@ class CategoryPricesState extends State<CategoryPrices> {
         }
       });
       widget.db!.rawQuery(
-          'SELECT shop, price, name FROM Product INNER JOIN Place ON Product.shop=Place.id WHERE category=?'
-          ' ORDER BY price ASC, name',
+          'SELECT Product.category categoryId, product.id, shop, price, place.name name, Category.name productName '
+          'FROM Product INNER JOIN Place ON Product.shop=Place.id INNER JOIN Category ON Product.category=Category.id '
+          'WHERE categoryId=? '
+          'UNION '
+          'SELECT Category.id categoryId, CategoryRel.sub id, shop, price, place.name name, Category.name productName FROM Product '
+          'INNER JOIN Place ON Product.shop=Place.id '
+          'INNER JOIN CategoryRel ON sub=categoryId '
+          'INNER JOIN Category ON Product.category=Category.id '
+          'WHERE super=? '
+          'ORDER BY price ASC, name',
           [
-            categoryId
+            categoryId,
+            categoryId,
           ]).then((result) => setState(() {
             prices = result
                 .map((r) => PriceDataWithPlaceName(
@@ -246,7 +259,8 @@ class CategoryPricesState extends State<CategoryPrices> {
                         placeIndex: r['shop'] as int,
                         categoryIndex: passedCategoryId,
                         price: r['price'] as double),
-                    placeName: r['name'] as String))
+                    placeName: r['name'] as String,
+                    productName: r['productName'] as String))
                 .toList(growable: false);
           }));
     }
@@ -266,9 +280,14 @@ class CategoryPricesState extends State<CategoryPrices> {
           children: prices == null
               ? []
               : prices!
-                  .map((r) => Text(
-                      "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
-                      textScaleFactor: 2.0))
+                  .map((r) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
+                                textScaleFactor: 2.0),
+                            Text(r.productName),
+                          ]))
                   .toList(growable: false),
         ))
       ]),
@@ -295,9 +314,12 @@ class PlacePrices extends StatefulWidget {
 class PriceDataWithCategoryName {
   PriceData priceData;
   String categoryName;
+  String productName;
 
   PriceDataWithCategoryName(
-      {required this.priceData, required this.categoryName});
+      {required this.priceData,
+      required this.categoryName,
+      required this.productName});
 }
 
 enum _PlacePricesMenuOp { edit, delete }
@@ -353,6 +375,7 @@ class PlacePricesState extends State<PlacePrices> {
                         categoryIndex: r['category'] as int,
                         placeIndex: passedPlaceId,
                         price: r['price'] as double),
+                    productName: "", // TODO: hack
                     categoryName: r['name'] as String))
                 .toList(growable: false);
           }));
@@ -381,11 +404,13 @@ class PlacePricesState extends State<PlacePrices> {
                             itemBuilder: (BuildContext context) => [
                                   PopupMenuItem(
                                       value: _PlacePricesMenuData(
-                                          op: _PlacePricesMenuOp.edit, index: index),
+                                          op: _PlacePricesMenuOp.edit,
+                                          index: index),
                                       child: const Text("Edit")),
                                   PopupMenuItem(
                                     value: _PlacePricesMenuData(
-                                        op: _PlacePricesMenuOp.delete, index: index),
+                                        op: _PlacePricesMenuOp.delete,
+                                        index: index),
                                     child: const Text('Delete'),
                                   ),
                                 ]),
