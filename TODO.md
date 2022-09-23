@@ -1,4 +1,5 @@
-- Display places on the map (required updating at least per 30 days by Google's license).
+- Display saved places on the map (required updating at least per 30 days by Google's license).
+  Or reversely allow to add a place by clicking map.
 - My errors explained in https://stackoverflow.com/a/73749826/856090
 - Autocomplete search for places.
 - Deleting places and categories, deleting prices.
