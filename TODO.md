@@ -9,8 +9,6 @@
 - How to dispose `TextEditingController`?
 - It allows to enter only whole numbers as prices.
 - Added place does not appear in Saved Places without "refresh" (closing Saved Places).
-- In prices per category include prices from subcategories (with small font specifying which
-  subcategory).
 - Initiate Google Maps when clicking by price in category.
 - Don't store data more than 30 days as per Google Maps license.
 - Limit amount of money spent by hiding Google API behind my own proxy server, sell in app
