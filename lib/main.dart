@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:io';
 import 'dart:isolate';
 import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:intl/intl.dart';
 import 'package:purchases/map.dart';
 import 'package:purchases/places.dart';
 import 'package:purchases/prices.dart';
@@ -25,21 +27,22 @@ Future<_Dummy> _googleMapsReload(Database db) async {
         'Place', columns: ['id', 'google_id', 'updated'],
         orderBy: 'updated',
         limit: 1);
-    if (result.isEmpty) {
-      await db.delete('Place', where: 'id=?', whereArgs: [result[0]['id'] as int]);
-    } else {
+    if (!result.isEmpty) {
       final mapsPlaces = GoogleMapsPlaces(
         // TODO: Don't call every time.
           apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
       // FIXME: Handle errors.
+      debugPrint("XXX: ${result[0]['google_id']}");
       var response = await mapsPlaces.getDetailsByPlaceId(
           result[0]['google_id'] as String,
-          fields: ['place_id', 'geometry/location', 'icon']);
+          // fields: ['place_id', 'geometry/location', 'icon'] // TODO: Bug in Flutter's GooglePlaces
+      );
       if (response.hasNoResults) {
         await db.delete('Place', where: 'id=?', whereArgs: [result[0]['id'] as int]);
       } else {
+        final DateFormat dateFormatter = DateFormat('yyyy-MM-dd hh:mm:ss');
         await db.update('Place', {
-          'updated': DateTime.now(),
+          'updated': dateFormatter.format(DateTime.now()),
           'google_id': response.result.placeId,
           'lat': response.result.geometry!.location.lat,
           'lng': response.result.geometry!.location.lng,
@@ -95,7 +98,7 @@ class MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/map': (context) => MyHomePage(onMove: onMove),
+        '/map': (context) => MyHomePage(db: db, onMove: onMove),
         '/places/saved': (context) => SavedPlaces(db: db, coord: coord),
         '/places/nearby': (context) => PlacesAdd(db: db, coord: coord),
         '/places/edit': (context) => PlacesAddForm(db: db),
@@ -127,7 +130,8 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, this.onMove});
+  final Database? db;
+  const MyHomePage({super.key, required this.db, this.onMove});
 
   final Function(LatLng)? onMove;
 
@@ -187,8 +191,8 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
         ]),
       ),
-      body: Center(
-        child: MyMap(onMove: onMoveImpl),
+      body: Center( // TODO: Is `Center` needed?
+        child: MyMap(db: widget.db, onMove: onMoveImpl),
       ),
     );
   }
