@@ -29,8 +29,9 @@ class CategoriesRelState extends State<CategoriesRel> {
     var categoryId = ModalRoute.of(context)!.settings.arguments as int;
     if (widget.db != null) {
       widget.db!
-          .query('Category', columns: ['name'], where: "id=?", whereArgs: [categoryId])
-      .then((result) {
+          .query('Category',
+              columns: ['name'], where: "id=?", whereArgs: [categoryId])
+          .then((result) {
         var categoryName = result[0]['name'] as String;
         if (categoryName != this.categoryName) {
           setState(() {
@@ -50,12 +51,12 @@ class CategoriesRelState extends State<CategoriesRel> {
       ),
       body: Column(children: [
         Text(categoryName != null ? "${widget.relText} of $categoryName:" : ""),
-        Expanded(child: _CategoriesRelList(
-            db: widget.db,
-            forwardColumn: widget.forwardColumn,
-            backwardColumn: widget.backwardColumn,
-            categoryId: categoryId)
-        )
+        Expanded(
+            child: _CategoriesRelList(
+                db: widget.db,
+                forwardColumn: widget.forwardColumn,
+                backwardColumn: widget.backwardColumn,
+                categoryId: categoryId))
       ]),
     );
   }
@@ -108,8 +109,10 @@ class _CategoriesRelListState extends State<_CategoriesRelList> {
         where: "${widget.backwardColumn}=? AND ${widget.forwardColumn}!=?",
         whereArgs: [widget.categoryId, widget.categoryId]);
     var set = {for (var e in result2) e['id'] as int};
-    var ordered = result1.map((value) => _CategoriesRelListStateValue2(
-        categoryId: value['id'] as int, categoryName: value['name'] as String));
+    var ordered = result1.where((value) => value['id'] as int != widget.categoryId).map(
+        (value) => _CategoriesRelListStateValue2(
+            categoryId: value['id'] as int,
+            categoryName: value['name'] as String));
     var rel2 = {
       for (var e in result1)
         e['id'] as int: _CategoriesRelListStateValue(
