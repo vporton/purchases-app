@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:isolate';
+import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:purchases/map.dart';
@@ -10,9 +13,27 @@ import 'categories-rel.dart';
 import 'db.dart';
 import 'categories.dart';
 
+class _Dummy {
+  _Dummy();
+}
+
+Future<_Dummy> _googleMapsReloadAsync() async {
+  // TODO
+  return _Dummy();
+}
+
+void _googleMapsReload(_Dummy n) {
+  _googleMapsReloadAsync().then((v) {});
+  sleep(const Duration(days: int64MaxValue)); // TODO: This does not work with JS target.
+}
+
 void main() async {
+  // var receivePort = ReceivePort();
+  // var thread = Isolate(receivePort.sendPort);
+  var thread = await Isolate.spawn(_googleMapsReload, _Dummy());
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
+  thread.kill(priority: Isolate.immediate);
 }
 
 class MyApp extends StatefulWidget {

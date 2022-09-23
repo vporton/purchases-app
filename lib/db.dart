@@ -12,6 +12,7 @@ Future onConfigure(Database db) async {
 void _migrateInitial(Batch batch) {
   batch.execute('''CREATE TABLE Place (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     google_id TEXT NOT NULL,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
@@ -19,6 +20,7 @@ void _migrateInitial(Batch batch) {
     lat REAL NOT NULL,
     lng REAL NOT NULL
 )''');
+  batch.execute('CREATE INDEX idx_place_updated ON Place (updated)');
   batch.execute('CREATE UNIQUE INDEX idx_place_google_id ON Place (google_id)');
   batch.execute('''CREATE TABLE Category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
