@@ -47,7 +47,7 @@ Future<_Dummy> _googleMapsReload(Database db) async {
           'lat': response.result.geometry!.location.lat,
           'lng': response.result.geometry!.location.lng,
           'icon_url': response.result.icon,
-        });
+        }, where: "id=?", whereArgs: [result[0]['id'] as int]);
       }
       await Future.delayed(waitPeriod);
     }
