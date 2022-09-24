@@ -32,7 +32,6 @@ Future<_Dummy> _googleMapsReload(Database db) async {
         // TODO: Don't call every time.
           apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
       // FIXME: Handle errors.
-      debugPrint("XXX: ${result[0]['google_id']}");
       var response = await mapsPlaces.getDetailsByPlaceId(
           result[0]['google_id'] as String,
           // fields: ['place_id', 'geometry/location', 'icon'] // TODO: Bug in Flutter's GooglePlaces
