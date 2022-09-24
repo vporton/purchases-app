@@ -7,10 +7,9 @@ import 'package:collection/collection.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PlacesAdd extends StatefulWidget {
-  final Database? db; // TODO: unneeded.
   final LatLng? coord;
 
-  const PlacesAdd({super.key, required this.db, required this.coord});
+  const PlacesAdd({super.key, required this.coord});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
@@ -61,7 +60,7 @@ class _PlacesAddState extends State<PlacesAdd> {
         coord = passedCoord;
       });
       // Check for `widget.db != null` to ensure onChoosePlace() is called with `db`.
-      if (passedCoord != null && widget.db != null) {
+      if (passedCoord != null) {
         final mapsPlaces = GoogleMapsPlaces(
             // TODO: Don't call every time.
             apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);

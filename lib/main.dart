@@ -100,7 +100,7 @@ class MyAppState extends State<MyApp> {
       routes: {
         '/map': (context) => MyHomePage(db: db, onMove: onMove),
         '/places/saved': (context) => SavedPlaces(db: db, coord: coord),
-        '/places/nearby': (context) => PlacesAdd(db: db, coord: coord),
+        '/places/nearby': (context) => PlacesAdd(coord: coord),
         '/places/edit': (context) => PlacesAddForm(db: db),
         '/places/prices': (context) => PlacePrices(db: db),
         '/categories': (context) => Categories(db: db),
