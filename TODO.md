@@ -2,7 +2,7 @@
   to detect clicks over markers that were not added by ourselves).
 - My errors explained in https://stackoverflow.com/a/73749826/856090
 - Autocomplete search for places.
-- Deleting prices.
+- Should ask confirmation when deleting prices?
 - Validate that place name or category name is non-empty.
 - Validate price entry textfield.
 - Validate in price edit that place name and category are selected.

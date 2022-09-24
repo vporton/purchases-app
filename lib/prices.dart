@@ -174,14 +174,16 @@ class _PricesEditState extends State<PricesEdit> {
           const Text("Price*:"),
           TextField(
             controller: priceTextController,
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]|\.'))],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9]|\.'))
+            ],
             keyboardType: TextInputType.number,
             onChanged: (text) {
               data!.price = double.parse(text); // TODO: Is `!` valid?
             },
           )
         ]),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Wrap(spacing: 8, children: [
           ElevatedButton(
             onPressed: () => saveState(context),
             child: const Text('OK'),
@@ -190,6 +192,20 @@ class _PricesEditState extends State<PricesEdit> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
+          ...(data!.placeIndex == null || data!.categoryIndex == null
+              ? []
+              : [
+                  OutlinedButton(
+                    onPressed: () {
+                      // TODO: In principle `widget.db` may be null.
+                      widget.db!.delete('Product',
+                          where: "shop=? AND category=?",
+                          whereArgs: [data!.placeIndex, data!.categoryIndex]);
+                      Navigator.pop(context, false);
+                    },
+                    child: const Text('Delete'),
+                  ),
+                ]),
         ]),
       ]),
     );
@@ -342,6 +358,12 @@ class PlacePricesState extends State<PlacePrices> {
         Navigator.pushNamed(context, '/prices/edit',
                 arguments: prices![item.index].priceData) // TODO: `!`?
             .then((value) {});
+        break;
+      case _PlacePricesMenuOp.delete:
+        var data = prices![item.index].priceData;
+        widget.db!.delete('Product',
+            where: "shop=? AND category=?",
+            whereArgs: [data.placeIndex, data.categoryIndex]).then((value) {});
         break;
     }
   }
