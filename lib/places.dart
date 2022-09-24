@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:collection/collection.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 import 'dialogs.dart';
 
@@ -22,8 +23,8 @@ class PlaceData {
   final String placeId;
   String name;
   String description;
-  final LatLng location;
-  final Uri icon;
+  LatLng? location;
+  Uri? icon;
 
   // TODO: business_status == "OPERATIONAL"
 
@@ -45,12 +46,38 @@ class PlaceData {
 
 class _PlacesAddState extends State<PlacesAdd> {
   List<PlaceData> places = [];
+  List<PlaceData> placesSearch = [];
+  bool addressInputed = false;
   LatLng? coord;
+  String? googleSearchToken;
 
   void onChoosePlaceImpl(PlaceData place, BuildContext context) {
     // Below warrants `widget.db != null`.
     Navigator.pushNamed(context, '/places/edit', arguments: place)
         .then((value) {});
+  }
+
+  void searchPlaces(String text) {
+    final mapsPlaces = GoogleMapsPlaces(
+        // TODO: Don't call every time.
+        apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
+    googleSearchToken ??= const Uuid().v4();
+    mapsPlaces
+        .autocomplete(
+          text, sessionToken: googleSearchToken,
+          location: Location(lat: coord!.latitude, lng: coord!.longitude),
+          // radius: 50000
+        )
+        .then((result) => setState(() {
+              placesSearch = result.predictions
+                  .map((r) => PlaceData(
+                      placeId: r.placeId!,
+                      name: r.description!,
+                      description: "",
+                      location: null,
+                      icon: null))
+                  .toList(growable: false);
+            }));
   }
 
   @override
@@ -99,16 +126,22 @@ class _PlacesAddState extends State<PlacesAdd> {
         title: const Text("Add Place"),
       ),
       body: Column(children: [
-        const TextField(
-          decoration: InputDecoration(
+        TextField(
+          decoration: const InputDecoration(
             // border: OutlineInputBorder(),
             hintText: 'address',
           ),
+          onChanged: (text) {
+            setState(() {
+              addressInputed = text.isNotEmpty;
+              searchPlaces(text);
+            });
+          },
         ),
         Expanded(
             child: _PlacesList(
                 db: widget.db,
-                places: places,
+                places: addressInputed ? placesSearch : places,
                 onChoosePlace: onChoosePlaceImpl)),
       ]),
     );
@@ -135,7 +168,7 @@ class _PlacesList extends StatelessWidget {
             onChoosePlace(places[index], context);
           },
           child: Row(children: [
-            Image.network(places[index].icon.toString(), scale: 2.0),
+            ...places[index].icon == null ? [] : [Image.network(places[index].icon.toString(), scale: 2.0)],
             Text(places[index].name, textScaleFactor: 2.0),
           ])),
     );
@@ -222,21 +255,32 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
   void initState() {}
 
   void saveState(BuildContext context) {
-    widget.db!
-        .insert(
+    if (place!.location == null) {
+      // TODO: Check for errors.
+      var mapsPlaces = GoogleMapsPlaces(
+        // TODO: Don't call every time.
+          apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
+      mapsPlaces.getDetailsByPlaceId(place!.placeId).then((response) {
+        var loc = response.result.geometry!.location;
+        place!.location = LatLng(loc.lat, loc.lng);
+        place!.icon = Uri.parse(response.result.icon!);
+
+        widget.db!
+            .insert(
           'Place',
           {
             'google_id': place!.placeId,
             'name': place!.name,
             'description': place!.description,
             'icon_url': place!.icon.toString(),
-            'lat': place!.location.latitude,
-            'lng': place!.location.longitude,
+            'lat': place!.location!.latitude,
+            'lng': place!.location!.longitude,
           },
           conflictAlgorithm: ConflictAlgorithm.replace,
         )
-        .then((c) => {});
-
+            .then((c) => {});
+      });
+    }
     Navigator.pop(context);
   }
 
