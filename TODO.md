@@ -4,8 +4,6 @@
 - Autocomplete search for places.
 - Should ask confirmation when deleting prices?
 - Validate that place name or category name is non-empty.
-- Validate price entry textfield.
-- Validate in price edit that place name and category are selected.
 - What to do with duplicate names of objects?
 - Use widget keys?
 - Help.
