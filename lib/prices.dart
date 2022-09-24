@@ -56,7 +56,7 @@ class _PricesEditState extends State<PricesEdit> {
               {
                 'shop': data!.placeIndex,
                 'category': data!.categoryIndex,
-                'price': data!.price!, // FIXME: `price` may be null.
+                'price': data!.price!,
               },
               conflictAlgorithm: ConflictAlgorithm.replace)
           .then((c) => {});
@@ -177,7 +177,9 @@ class _PricesEditState extends State<PricesEdit> {
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'\d|\.')),
               TextInputFormatter.withFunction((oldValue, newValue) {
-                return RegExp(r'^(?:|\d+(?:\.\d*)?)$').hasMatch(newValue.text) ? newValue : oldValue;
+                return RegExp(r'^(?:|\d+(?:\.\d*)?)$').hasMatch(newValue.text)
+                    ? newValue
+                    : oldValue;
               })
             ],
             keyboardType: TextInputType.number,
@@ -188,7 +190,12 @@ class _PricesEditState extends State<PricesEdit> {
         ]),
         Wrap(spacing: 8, children: [
           ElevatedButton(
-            onPressed: () => saveState(context),
+            onPressed: data!.placeIndex != null &&
+                    data!.categoryIndex != null &&
+                    RegExp(r'^\d+(?:\.\d+)?$')
+                        .hasMatch(priceTextController.text)
+                ? () => saveState(context)
+                : null,
             child: const Text('OK'),
           ),
           OutlinedButton(
