@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'dialogs.dart';
+
 class CategoryData {
   int? id;
   String name;
@@ -33,27 +35,35 @@ class _CategoriesState extends State<Categories> {
 
   _CategoriesState() : list = [];
 
-  void onMenuClicked(_CategoriesMenuData item) {
+  void onMenuClicked(_CategoriesMenuData item, BuildContext context) {
     switch (item.op) {
       case _CategoriesMenuOp.prices:
         Navigator.pushNamed(context, '/categories/prices',
-                arguments: list[item.index].id)
+            arguments: list[item.index].id)
             .then((value) {});
         break;
       case _CategoriesMenuOp.supercategories:
         Navigator.pushNamed(context, '/categories/super',
-                arguments: list[item.index].id)
+            arguments: list[item.index].id)
             .then((value) {});
         break;
       case _CategoriesMenuOp.subcategories:
         Navigator.pushNamed(context, '/categories/sub',
-                arguments: list[item.index].id)
+            arguments: list[item.index].id)
             .then((value) {});
         break;
       case _CategoriesMenuOp.edit:
         Navigator.pushNamed(context, '/categories/edit',
-                arguments: list[item.index])
+            arguments: list[item.index])
             .then((value) {});
+        break;
+      case _CategoriesMenuOp.delete:
+        askDeletePermission(context)
+            .then((reply) {
+          if (reply) {
+            widget.db!.delete('Category', where: 'id=?', whereArgs: [list[item.index].id]);
+          }
+        });
         break;
     }
   }
@@ -63,15 +73,17 @@ class _CategoriesState extends State<Categories> {
     if (widget.db != null) {
       widget.db!
           .query('Category',
-              columns: ['id', 'name', 'description'], orderBy: 'name')
-          .then((result) => setState(() {
-                list = result
-                    .map((r) => CategoryData(
-                        id: r['id'] as int,
-                        name: r['name'] as String,
-                        description: r['description'] as String))
-                    .toList(growable: false);
-              }));
+          columns: ['id', 'name', 'description'], orderBy: 'name')
+          .then((result) =>
+          setState(() {
+            list = result
+                .map((r) =>
+                CategoryData(
+                    id: r['id'] as int,
+                    name: r['name'] as String,
+                    description: r['description'] as String))
+                .toList(growable: false);
+          }));
     }
     return Scaffold(
       appBar: AppBar(
@@ -82,41 +94,49 @@ class _CategoriesState extends State<Categories> {
         title: const Text("Product Categories"),
       ),
       body: ListView.separated(
-        separatorBuilder: (context, index) => const Divider(
+        separatorBuilder: (context, index) =>
+        const Divider(
           color: Colors.black45,
         ),
         itemCount: list.length,
-        itemBuilder: (context, index) => Row(children: [
-          PopupMenuButton(
-              onSelected: onMenuClicked,
-              itemBuilder: (BuildContext context) => [
+        itemBuilder: (context, index) =>
+            Row(children: [
+              PopupMenuButton(
+                  onSelected: (item) => onMenuClicked(item, context),
+                  itemBuilder: (BuildContext context) =>
+                  [
                     PopupMenuItem(
                       value: _CategoriesMenuData(
-                          op: _CategoriesMenuOp.prices, index: index),
+                          op: _CategoriesMenuOp.prices,
+                          index: index),
                       child: Text('Best prices'),
                     ),
                     PopupMenuItem(
                       value: _CategoriesMenuData(
-                          op: _CategoriesMenuOp.supercategories, index: index),
+                          op: _CategoriesMenuOp.supercategories,
+                          index: index),
                       child: Text('Supercategories'),
                     ),
                     PopupMenuItem(
                       value: _CategoriesMenuData(
-                          op: _CategoriesMenuOp.subcategories, index: index),
+                          op: _CategoriesMenuOp.subcategories,
+                          index: index),
                       child: Text('Subcategories'),
                     ),
                     PopupMenuItem(
                         value: _CategoriesMenuData(
-                            op: _CategoriesMenuOp.edit, index: index),
+                            op: _CategoriesMenuOp.edit,
+                            index: index),
                         child: Text("Edit")),
                     PopupMenuItem(
                       value: _CategoriesMenuData(
-                          op: _CategoriesMenuOp.delete, index: index),
+                          op: _CategoriesMenuOp.delete,
+                          index: index),
                       child: Text('Delete'),
                     ),
                   ]),
-          Text(list[index].name, textScaleFactor: 2.0),
-        ]),
+              Text(list[index].name, textScaleFactor: 2.0),
+            ]),
         //     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         //   Text(list[index].name, textScaleFactor: 2.0),
         //   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -162,13 +182,13 @@ class CategoriesEditState extends State<CategoriesEdit> {
     if (category!.id != null) {
       widget.db!
           .update(
-              'Category',
-              {
-                'name': category!.name,
-                'description': category!.description,
-              },
-              where: "id=?",
-              whereArgs: [category!.id])
+          'Category',
+          {
+            'name': category!.name,
+            'description': category!.description,
+          },
+          where: "id=?",
+          whereArgs: [category!.id])
           .then((c) => {});
     } else {
       widget.db!.insert('Category', {
@@ -184,7 +204,10 @@ class CategoriesEditState extends State<CategoriesEdit> {
   Widget build(BuildContext context) {
     if (category == null) {
       var newCategory =
-          ModalRoute.of(context)!.settings.arguments as CategoryData? ??
+          ModalRoute
+              .of(context)!
+              .settings
+              .arguments as CategoryData? ??
               CategoryData(name: "", description: "");
       setState(() {
         category = newCategory;

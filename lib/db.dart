@@ -29,16 +29,16 @@ void _migrateInitial(Batch batch) {
 )''');
   batch.execute('''CREATE TABLE Product (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    shop INTEGER NOT NULL REFERENCES Place(id) ON UPDATE CASCADE,
-    category INTEGER NOT NULL REFERENCES Category(id) ON UPDATE CASCADE,
+    shop INTEGER NOT NULL REFERENCES Place(id) ON DELETE CASCADE,
+    category INTEGER NOT NULL REFERENCES Category(id) ON DELETE CASCADE,
     price REAL NOT NULL
 )''');
   batch.execute('CREATE UNIQUE INDEX idx_product_uniq ON Product (shop, category)');
   batch.execute('CREATE INDEX idx_product_price ON Product (price)');
   batch.execute('''CREATE TABLE CategoryRel (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    super INTEGER NOT NULL REFERENCES Category(id) ON UPDATE CASCADE,
-    sub INTEGER NOT NULL REFERENCES Category(id) ON UPDATE CASCADE    
+    super INTEGER NOT NULL REFERENCES Category(id) ON DELETE CASCADE,
+    sub INTEGER NOT NULL REFERENCES Category(id) ON DELETE CASCADE    
 )''');
 }
 

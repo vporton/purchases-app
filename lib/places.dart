@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:collection/collection.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'dialogs.dart';
+
 class PlacesAdd extends StatefulWidget {
+  final Database? db;
   final LatLng? coord;
 
-  const PlacesAdd({super.key, required this.coord});
+  const PlacesAdd({super.key, required this.db, required this.coord});
 
   @override
   State<PlacesAdd> createState() => _PlacesAddState();
@@ -105,17 +107,18 @@ class _PlacesAddState extends State<PlacesAdd> {
         ),
         Expanded(
             child:
-                _PlacesList(places: places, onChoosePlace: onChoosePlaceImpl)),
+                _PlacesList(db: widget.db, places: places, onChoosePlace: onChoosePlaceImpl)),
       ]),
     );
   }
 }
 
 class _PlacesList extends StatelessWidget {
+  Database? db;
   final List<PlaceData> places;
   void Function(PlaceData place, BuildContext context) onChoosePlace;
 
-  _PlacesList({required this.places, required this.onChoosePlace});
+  _PlacesList({required this.db, required this.places, required this.onChoosePlace});
 
   @override
   Widget build(BuildContext context) {
@@ -137,9 +140,10 @@ class _PlacesList extends StatelessWidget {
 }
 
 class _SavedPlacesList extends StatelessWidget {
+  final Database? db;
   final List<PlaceData> places;
 
-  _SavedPlacesList({required this.places});
+  _SavedPlacesList({required this.db, required this.places});
 
   void onMenuClicked(_PlacesMenuData item, BuildContext context) {
     switch (item.op) {
@@ -152,6 +156,14 @@ class _SavedPlacesList extends StatelessWidget {
         Navigator.pushNamed(context, '/places/edit',
                 arguments: places[item.index])
             .then((value) {});
+        break;
+      case _PlacesMenuOp.delete:
+        askDeletePermission(context)
+            .then((reply) {
+          if (reply) {
+            db!.delete('Place', where: 'id=?', whereArgs: [places[item.index].id]);
+          }
+        });
         break;
     }
   }
@@ -325,7 +337,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
             onTap: () => Navigator.pop(context)),
         title: const Text("Saved Places"),
       ),
-      body: _SavedPlacesList(places: places),
+      body: _SavedPlacesList(db: widget.db, places: places),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
