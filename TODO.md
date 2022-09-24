@@ -9,7 +9,6 @@
 - Use widget keys?
 - Help.
 - How to dispose `TextEditingController`?
-- It allows to enter only whole numbers as prices.
 - Added place does not appear in Saved Places without "refresh" (closing Saved Places).
 - Initiate Google Maps when clicking by price in category.
 - Limit amount of money spent by hiding Google API behind my own proxy server, sell in app

@@ -174,7 +174,7 @@ class _PricesEditState extends State<PricesEdit> {
           const Text("Price*:"),
           TextField(
             controller: priceTextController,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]|\.'))],
             keyboardType: TextInputType.number,
             onChanged: (text) {
               data!.price = double.parse(text); // TODO: Is `!` valid?
