@@ -191,9 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
         ]),
       ),
-      body: Center( // TODO: Is `Center` needed?
-        child: MyMap(db: widget.db, onMove: onMoveImpl),
-      ),
+      body: MyMap(db: widget.db, onMove: onMoveImpl),
     );
   }
 }
