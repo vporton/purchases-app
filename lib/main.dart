@@ -40,8 +40,9 @@ Future<_Dummy> _googleMapsReload(Database db) async {
         await db.delete('Place', where: 'id=?', whereArgs: [result[0]['id'] as int]);
         await Future.delayed(waitPeriod);
       } else {
-        await Future.delayed((result[0]['updated'] as DateTime).add(waitPeriod).difference(DateTime.now()));
         final DateFormat dateFormatter = DateFormat('yyyy-MM-dd hh:mm:ss');
+        var updated = dateFormatter.parse(result[0]['updated'] as String);
+        await Future.delayed(updated.add(waitPeriod).difference(DateTime.now()));
         await db.update('Place', {
           'updated': dateFormatter.format(DateTime.now()),
           'google_id': response.result.placeId,
