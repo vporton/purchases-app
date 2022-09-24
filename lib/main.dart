@@ -38,7 +38,9 @@ Future<_Dummy> _googleMapsReload(Database db) async {
       );
       if (response.hasNoResults) {
         await db.delete('Place', where: 'id=?', whereArgs: [result[0]['id'] as int]);
+        await Future.delayed(waitPeriod);
       } else {
+        await Future.delayed((result[0]['updated'] as DateTime).add(waitPeriod).difference(DateTime.now()));
         final DateFormat dateFormatter = DateFormat('yyyy-MM-dd hh:mm:ss');
         await db.update('Place', {
           'updated': dateFormatter.format(DateTime.now()),
@@ -48,6 +50,7 @@ Future<_Dummy> _googleMapsReload(Database db) async {
           'icon_url': response.result.icon,
         }, where: "id=?", whereArgs: [result[0]['id'] as int]);
       }
+    } else {
       await Future.delayed(waitPeriod);
     }
   }
