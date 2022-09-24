@@ -70,7 +70,7 @@ class _PlacesAddState extends State<PlacesAdd> {
             .searchNearbyWithRadius(
                 Location(
                     lat: passedCoord!.latitude, lng: passedCoord!.longitude),
-                2500)
+                2500) // TODO: the number
             .then((PlacesSearchResponse response) {
           var results = response.results
               .map((r) => PlaceData(
@@ -106,8 +106,10 @@ class _PlacesAddState extends State<PlacesAdd> {
           ),
         ),
         Expanded(
-            child:
-                _PlacesList(db: widget.db, places: places, onChoosePlace: onChoosePlaceImpl)),
+            child: _PlacesList(
+                db: widget.db,
+                places: places,
+                onChoosePlace: onChoosePlaceImpl)),
       ]),
     );
   }
@@ -118,7 +120,8 @@ class _PlacesList extends StatelessWidget {
   final List<PlaceData> places;
   void Function(PlaceData place, BuildContext context) onChoosePlace;
 
-  _PlacesList({required this.db, required this.places, required this.onChoosePlace});
+  _PlacesList(
+      {required this.db, required this.places, required this.onChoosePlace});
 
   @override
   Widget build(BuildContext context) {
@@ -158,10 +161,10 @@ class _SavedPlacesList extends StatelessWidget {
             .then((value) {});
         break;
       case _PlacesMenuOp.delete:
-        askDeletePermission(context)
-            .then((reply) {
+        askDeletePermission(context).then((reply) {
           if (reply) {
-            db!.delete('Place', where: 'id=?', whereArgs: [places[item.index].id]);
+            db!.delete('Place',
+                where: 'id=?', whereArgs: [places[item.index].id]);
           }
         });
         break;
