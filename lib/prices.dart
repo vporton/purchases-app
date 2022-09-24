@@ -175,7 +175,10 @@ class _PricesEditState extends State<PricesEdit> {
           TextField(
             controller: priceTextController,
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[0-9]|\.'))
+              FilteringTextInputFormatter.allow(RegExp(r'\d|\.')),
+              TextInputFormatter.withFunction((oldValue, newValue) {
+                return RegExp(r'^(?:|\d+(?:\.\d*)?)$').hasMatch(newValue.text) ? newValue : oldValue;
+              })
             ],
             keyboardType: TextInputType.number,
             onChanged: (text) {
