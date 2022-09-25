@@ -186,8 +186,10 @@ class _PlacesList extends StatelessWidget {
 class _SavedPlacesList extends StatelessWidget {
   final Database? db;
   final List<PlaceData> places;
+  final void Function() onUpdateData;
 
-  _SavedPlacesList({required this.db, required this.places});
+  _SavedPlacesList(
+      {required this.db, required this.places, required this.onUpdateData});
 
   void onMenuClicked(_PlacesMenuData item, BuildContext context) {
     switch (item.op) {
@@ -199,9 +201,12 @@ class _SavedPlacesList extends StatelessWidget {
       case _PlacesMenuOp.edit:
         Navigator.pushNamed(context, '/places/edit',
                 arguments: places[item.index])
-            .then((value) {});
+            .then((value) {
+          onUpdateData();
+        });
         break;
       case _PlacesMenuOp.delete:
+        // FIXME: Update saved places list on delete.
         askDeletePermission(context).then((reply) {
           if (reply) {
             db!.delete('Place',
@@ -355,8 +360,8 @@ class SavedPlaces extends StatefulWidget {
 class _SavedPlacesState extends State<SavedPlaces> {
   List<PlaceData> places = [];
 
-  @override
-  Widget build(BuildContext context) {
+  void updateData() {
+    debugPrint("AAA");
     if (widget.db != null) {
       widget.db!
           .query('Place',
@@ -381,13 +386,20 @@ class _SavedPlacesState extends State<SavedPlaces> {
                 icon: Uri.parse(row['icon_url'] as String)))
             .toList(growable: false);
         var eq = const ListEquality().equals;
+        debugPrint("BBB: ${places.isNotEmpty ? places[0].name : []} / ${newPlaces.isNotEmpty ? newPlaces[0].name : []}");
         if (!eq(newPlaces, places)) {
+          debugPrint("CCC");
           setState(() {
             places = newPlaces;
           });
         }
       });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    updateData();
 
     return Scaffold(
       appBar: AppBar(
@@ -396,13 +408,16 @@ class _SavedPlacesState extends State<SavedPlaces> {
             onTap: () => Navigator.pop(context)),
         title: const Text("Saved Places"),
       ),
-      body: _SavedPlacesList(db: widget.db, places: places),
+      body: _SavedPlacesList(
+          db: widget.db, places: places, onUpdateData: updateData),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, '/places/nearby',
                     arguments: widget.coord)
-                .then((value) {});
+                .then((value) {
+              updateData();
+            });
           }),
     );
   }

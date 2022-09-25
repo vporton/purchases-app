@@ -194,7 +194,7 @@ class _CategoriesRelListState extends State<_CategoriesRelList> {
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Add relations?'),
           content: Text(
-              "Add the following subcategory relations:\n$relationsStr"), // FIXME: It may be supercategory.
+              "Add the following ${widget.relText2} relations:\n$relationsStr"),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, false),

@@ -63,9 +63,12 @@ class _CategoriesState extends State<Categories> {
       case _CategoriesMenuOp.edit:
         Navigator.pushNamed(context, '/categories/edit',
                 arguments: list[item.index])
-            .then((value) {});
+            .then((value) {
+          updateData();
+        });
         break;
       case _CategoriesMenuOp.delete:
+        // FIXME: Update kinds list on delete.
         askDeletePermission(context).then((reply) {
           if (reply) {
             widget.db!.delete('Category',
@@ -76,18 +79,17 @@ class _CategoriesState extends State<Categories> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void updateData() {
     if (widget.db != null) {
       widget.db!
           .query('Category',
-              columns: ['id', 'name', 'description'], orderBy: 'name')
+          columns: ['id', 'name', 'description'], orderBy: 'name')
           .then((result) {
         var newList = result
             .map((r) => CategoryData(
-                id: r['id'] as int,
-                name: r['name'] as String,
-                description: r['description'] as String))
+            id: r['id'] as int,
+            name: r['name'] as String,
+            description: r['description'] as String))
             .toList(growable: false);
         var eq = const ListEquality().equals;
         if (!eq(newList, list)) {
@@ -97,6 +99,12 @@ class _CategoriesState extends State<Categories> {
         }
       });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    updateData();
+
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
@@ -147,7 +155,9 @@ class _CategoriesState extends State<Categories> {
           onPressed: () {
             // Below warrants `widget.db != null`.
             Navigator.pushNamed(context, '/categories/edit', arguments: null)
-                .then((value) {});
+                .then((value) {
+              updateData();
+            });
           }),
     );
   }
