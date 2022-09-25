@@ -12,6 +12,5 @@
 - Limit amount of money spent by hiding Google API behind my own proxy server, sell in app
   access to that server.
 - Use `ListTile` class where appropriate.
-- Rename categories -> kinds.
 
 See also `TODO` and `FIXME` in the source.

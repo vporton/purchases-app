@@ -180,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
           ListTile(
               leading: const Icon(Icons.category),
-              title: const Text("Product categories"),
+              title: const Text("Product kinds"),
               onTap: () {
                 Navigator.pushNamed(context, '/categories').then((value) {});
               }),

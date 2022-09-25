@@ -151,7 +151,7 @@ class _PricesEditState extends State<PricesEdit> {
           ),
         ]),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text("Category*:"),
+          const Text("Kind*:"),
           DropdownButton<int>(
             value: data?.categoryIndex,
             items: categories == null
@@ -298,7 +298,7 @@ class CategoryPricesState extends State<CategoryPrices> {
           leading: InkWell(
               child: const Icon(Icons.arrow_circle_left),
               onTap: () => Navigator.pop(context)),
-          title: const Text("Best prices for category")),
+          title: const Text("Best prices for kind")),
       body: Column(children: [
         Text("Category: $categoryName"),
         Expanded(

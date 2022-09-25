@@ -103,7 +103,7 @@ class _CategoriesState extends State<Categories> {
           child: const Icon(Icons.close),
           onTap: () => Navigator.pop(context),
         ),
-        title: const Text("Product Categories"),
+        title: const Text("Product Kinds"),
       ),
       body: ListView.separated(
         separatorBuilder: (context, index) => const Divider(
@@ -207,11 +207,11 @@ class CategoriesEditState extends State<CategoriesEdit> {
           leading: InkWell(
               child: const Icon(Icons.arrow_circle_left),
               onTap: () => Navigator.pop(context)),
-          title: const Text("Edit Category"),
+          title: const Text("Edit Kind"),
         ),
         body: Column(children: [
           Column(children: [
-            const Text("Category name:*"),
+            const Text("Product kind name:*"),
             TextField(
                 controller: nameTextController,
                 onChanged: (value) {
