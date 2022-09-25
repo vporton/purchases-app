@@ -36,9 +36,15 @@ class PlaceData {
       required this.location,
       required this.icon});
 
-  // FIXME: hack
   @override
-  bool operator ==(other) => other is PlaceData && placeId == other.placeId;
+  bool operator ==(other) =>
+      other is PlaceData &&
+      id == other.id &&
+      placeId == other.placeId &&
+      name == other.name &&
+      description == other.description &&
+      location == other.location &&
+      icon == other.icon;
 
   @override
   int get hashCode => placeId.hashCode;
@@ -168,7 +174,9 @@ class _PlacesList extends StatelessWidget {
             onChoosePlace(places[index], context);
           },
           child: Row(children: [
-            ...places[index].icon == null ? [] : [Image.network(places[index].icon.toString(), scale: 2.0)],
+            ...places[index].icon == null
+                ? []
+                : [Image.network(places[index].icon.toString(), scale: 2.0)],
             Text(places[index].name, textScaleFactor: 2.0),
           ])),
     );
@@ -254,33 +262,37 @@ class _PlacesAddFormState extends State<PlacesAddForm> {
   @override
   void initState() {}
 
+  Future<void> _insertPlace() async {
+    await widget.db!.insert(
+      'Place',
+      {
+        ...place!.id != null ? {'id': place!.id} : {},
+        'google_id': place!.placeId,
+        'name': place!.name,
+        'description': place!.description,
+        'icon_url': place!.icon.toString(),
+        'lat': place!.location!.latitude,
+        'lng': place!.location!.longitude,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
   void saveState(BuildContext context) {
     if (place!.location == null) {
       // TODO: Check for errors.
       var mapsPlaces = GoogleMapsPlaces(
-        // TODO: Don't call every time.
+          // TODO: Don't call every time.
           apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']);
       mapsPlaces.getDetailsByPlaceId(place!.placeId).then((response) {
         var loc = response.result.geometry!.location;
         place!.location = LatLng(loc.lat, loc.lng);
         place!.icon = Uri.parse(response.result.icon!);
-
-        widget.db!
-            .insert(
-          'Place',
-          {
-            'google_id': place!.placeId,
-            'name': place!.name,
-            'description': place!.description,
-            'icon_url': place!.icon.toString(),
-            'lat': place!.location!.latitude,
-            'lng': place!.location!.longitude,
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        )
-            .then((c) => {});
-      });
+      }).then((c) => _insertPlace());
+    } else {
+      _insertPlace().then((c) => {});
     }
+
     Navigator.pop(context);
   }
 
