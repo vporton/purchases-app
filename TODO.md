@@ -14,5 +14,6 @@
 - Use `ListTile` class where appropriate.
 - In a hardly understandable reason, `_SavedPlacesState.places` updates before `updateData()` is
   run, thus preventing updating displayed Saved Places list after editing a place name.
+  Also similar error when deleting a place.
 
 See also `TODO` and `FIXME` in the source.

@@ -72,7 +72,8 @@ class _CategoriesState extends State<Categories> {
         askDeletePermission(context).then((reply) {
           if (reply) {
             widget.db!.delete('Category',
-                where: 'id=?', whereArgs: [list[item.index].id]);
+                where: 'id=?', whereArgs: [list[item.index].id])
+            .then((s) => updateData());
           }
         });
         break;

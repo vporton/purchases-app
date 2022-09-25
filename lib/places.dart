@@ -210,7 +210,8 @@ class _SavedPlacesList extends StatelessWidget {
         askDeletePermission(context).then((reply) {
           if (reply) {
             db!.delete('Place',
-                where: 'id=?', whereArgs: [places[item.index].id]);
+                where: 'id=?',
+                whereArgs: [places[item.index].id]).then((s) => onUpdateData());
           }
         });
         break;
@@ -387,8 +388,10 @@ class _SavedPlacesState extends State<SavedPlaces> {
                 icon: Uri.parse(row['icon_url'] as String)))
             .toList(growable: false);
         var eq = const ListEquality().equals;
-        debugPrint("IDENT: ${places.isEmpty ? '[]' : identical(places[0].name, newPlaces[0].name)}");
-        debugPrint("BBB: ${places.isNotEmpty ? places[0].name : []} / ${newPlaces.isNotEmpty ? newPlaces[0].name : []}");
+        debugPrint(
+            "IDENT: ${places.isEmpty ? '[]' : identical(places[0].name, newPlaces[0].name)}");
+        debugPrint(
+            "BBB: ${places.isNotEmpty ? places[0].name : []} / ${newPlaces.isNotEmpty ? newPlaces[0].name : []}");
         if (!eq(newPlaces, places)) {
           debugPrint("CCC");
           setState(() {
