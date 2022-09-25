@@ -7,7 +7,7 @@
 - Use widget keys?
 - Help.
 - How to dispose `TextEditingController`?
-- Added/deleted place does not appear in Saved Places without "refresh" (closing Saved Places).
+- Added/deleted place/category does not appear in Saved Places/Categories without "refresh" (closing the page).
 - Initiate Google Maps when clicking by price in category.
 - Limit amount of money spent by hiding Google API behind my own proxy server, sell in app
   access to that server.
