@@ -12,5 +12,7 @@
 - Limit amount of money spent by hiding Google API behind my own proxy server, sell in app
   access to that server.
 - Use `ListTile` class where appropriate.
+- In a hardly understandable reason, `_SavedPlacesState.places` updates before `updateData()` is
+  run, thus preventing updating displayed Saved Places list after editing a place name.
 
 See also `TODO` and `FIXME` in the source.

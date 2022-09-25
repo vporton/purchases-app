@@ -361,7 +361,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
   List<PlaceData> places = [];
 
   void updateData() {
-    debugPrint("AAA");
+    debugPrint("AAA: ${places.isNotEmpty ? places[0].name : []}");
     if (widget.db != null) {
       widget.db!
           .query('Place',
@@ -376,6 +376,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
               ],
               orderBy: 'name')
           .then((result) {
+        debugPrint("BBB*: ${places.isNotEmpty ? places[0].name : []}");
         var newPlaces = result
             .map((row) => PlaceData(
                 id: row['id'] as int,
@@ -386,6 +387,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
                 icon: Uri.parse(row['icon_url'] as String)))
             .toList(growable: false);
         var eq = const ListEquality().equals;
+        debugPrint("IDENT: ${places.isEmpty ? '[]' : identical(places[0].name, newPlaces[0].name)}");
         debugPrint("BBB: ${places.isNotEmpty ? places[0].name : []} / ${newPlaces.isNotEmpty ? newPlaces[0].name : []}");
         if (!eq(newPlaces, places)) {
           debugPrint("CCC");
