@@ -95,7 +95,7 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Purchases App',
+      title: 'Local Shops',
       initialRoute: '/map',
       theme: ThemeData(
         primarySwatch: Colors.blue,
