@@ -16,5 +16,6 @@
   run, thus preventing updating displayed Saved Places list after editing a place name.
   Also similar error when deleting a place.
 - The map does not update markers when creating/deleting places.
+- Rename app `purchases` -> `local_shops`.
 
 See also `TODO` and `FIXME` in the source.
