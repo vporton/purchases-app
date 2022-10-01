@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 /// Let's use FOREIGN KEY constraints
 Future onConfigure(Database db) async {
@@ -40,6 +41,13 @@ void _migrateInitial(Batch batch) {
     super INTEGER NOT NULL REFERENCES Category(id) ON DELETE CASCADE,
     sub INTEGER NOT NULL REFERENCES Category(id) ON DELETE CASCADE    
 )''');
+  batch.execute('''CREATE TABLE Global (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    installation BLOB
+)''');
+  var uuid = const Uuid();
+  var buffer = List<int>.filled(16, 0);
+  batch.insert('Global', {'installation': Uint8List.fromList(uuid.v4buffer(buffer))});
 }
 
 var _migrations = [

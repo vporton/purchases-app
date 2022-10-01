@@ -48,6 +48,7 @@ dependencies:
   dart_numerics: ^0.0.6
   marker_icon: ^0.7.1
   uuid: ^3.0.6
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

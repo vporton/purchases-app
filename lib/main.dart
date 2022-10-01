@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:intl/intl.dart';
 import 'package:purchases/map.dart';
+import 'package:purchases/payments.dart';
 import 'package:purchases/places.dart';
 import 'package:purchases/prices.dart';
 import 'package:sqflite/sqflite.dart';
@@ -127,6 +128,7 @@ class MyAppState extends State<MyApp> {
             ),
         '/categories/prices': (context) => CategoryPrices(db: db),
         '/prices/edit': (context) => PricesEdit(db: db),
+        '/payments': (context) => Payments(db: db),
       },
     );
   }
@@ -161,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         // leading:
-        title: const Text("Prices app"),
+        title: const Text("Local shops app"),
       ),
       drawer: Drawer(
         child: ListView(children: [
@@ -190,6 +192,14 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 Navigator.pushNamed(context, '/prices/edit',
                     arguments: PriceData.empty())
+                    .then((value) {});
+              }),
+          ListTile(
+              leading: const Icon(Icons.money),
+              title: const Text("Buy credits"),
+              onTap: () {
+                Navigator.pushNamed(context, '/payments',
+                    arguments: null)
                     .then((value) {});
               }),
         ]),
