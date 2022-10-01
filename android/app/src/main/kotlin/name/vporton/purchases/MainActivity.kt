@@ -1,4 +1,4 @@
-package name.vporton.purchases
+package name.vporton.local_shops
 
 import io.flutter.embedding.android.FlutterActivity
 
