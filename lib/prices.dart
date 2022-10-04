@@ -46,6 +46,7 @@ class _PricesEditState extends State<PricesEdit> {
   List<_ShortPlaceData>? places;
   List<_ShortCategoryData>? categories;
   PriceData? data = PriceData.empty();
+  TextEditingController priceTextController = TextEditingController();
 
   void saveState(BuildContext context) {
     if (data?.placeIndex != null && data?.categoryIndex != null) {
@@ -83,11 +84,15 @@ class _PricesEditState extends State<PricesEdit> {
   @override
   Widget build(BuildContext context) {
     var passedData = ModalRoute.of(context)!.settings.arguments as PriceData;
-    var priceTextController = TextEditingController();
     if (passedData != data) {
       setState(() {
         data = passedData;
       });
+      if (data != null && data!.price != null) {
+        setState(() {
+          priceTextController.text = data!.price.toString();
+        });
+      }
     }
     if (widget.db != null) {
       if (places == null) {
@@ -117,10 +122,6 @@ class _PricesEditState extends State<PricesEdit> {
         });
       }
     }
-
-    // TODO: state?
-    priceTextController.text =
-        data?.price == null ? "" : data!.price.toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -184,7 +185,6 @@ class _PricesEditState extends State<PricesEdit> {
             ],
             keyboardType: TextInputType.number,
             onChanged: (text) {
-              debugPrint("ZZZ: ${text}");
               setState(() {
                 data!.price = double.parse(text); // TODO: Is `!` valid?
               });
