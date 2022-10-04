@@ -183,13 +183,57 @@ class _PlacesList extends StatelessWidget {
   }
 }
 
-class _SavedPlacesList extends StatelessWidget {
+class _SavedPlacesList extends StatefulWidget {
   final Database? db;
   final List<PlaceData> places;
-  final void Function() onUpdateData;
 
   _SavedPlacesList(
       {required this.db, required this.places, required this.onUpdateData});
+}
+
+class _SavedPlaceListState extends State<_SavedPlacesList> {
+  List<PlaceData> places = [];
+
+  void updateData() {
+    debugPrint("AAA: ${places.isNotEmpty ? places[0].name : []}");
+    if (widget.db != null) {
+      widget.db!
+          .query('Place',
+              columns: [
+                'id',
+                'google_id',
+                'name',
+                'description',
+                'lat',
+                'lng',
+                'icon_url',
+              ],
+              orderBy: 'name')
+          .then((result) {
+        debugPrint("BBB*: ${places.isNotEmpty ? places[0].name : []}");
+        var newPlaces = result
+            .map((row) => PlaceData(
+                id: row['id'] as int,
+                placeId: row['google_id'] as String,
+                name: row['name'] as String,
+                description: row['description'] as String,
+                location: LatLng(row['lat'] as double, row['lng'] as double),
+                icon: Uri.parse(row['icon_url'] as String)))
+            .toList(growable: false);
+        var eq = const ListEquality().equals;
+        debugPrint(
+            "IDENT: ${places.isEmpty ? '[]' : identical(places[0].name, newPlaces[0].name)}");
+        debugPrint(
+            "BBB: ${places.isNotEmpty ? places[0].name : []} / ${newPlaces.isNotEmpty ? newPlaces[0].name : []}");
+        if (!eq(newPlaces, places)) {
+          debugPrint("CCC");
+          setState(() {
+            places = newPlaces;
+          });
+        }
+      });
+    }
+  }
 
   void onMenuClicked(_PlacesMenuData item, BuildContext context) {
     switch (item.op) {
@@ -201,17 +245,15 @@ class _SavedPlacesList extends StatelessWidget {
       case _PlacesMenuOp.edit:
         Navigator.pushNamed(context, '/places/edit',
                 arguments: places[item.index])
-            .then((value) {
-          onUpdateData();
-        });
+            .then((s) => updateData());
         break;
       case _PlacesMenuOp.delete:
-        // FIXME: Update saved places list on delete.
         askDeletePermission(context).then((reply) {
           if (reply) {
-            db!.delete('Place',
-                where: 'id=?',
-                whereArgs: [places[item.index].id]).then((s) => onUpdateData());
+            widget.db!
+                .delete('Place',
+                    where: 'id=?', whereArgs: [places[item.index].id])
+                .then((s) => updateData());
           }
         });
         break;
@@ -359,49 +401,6 @@ class SavedPlaces extends StatefulWidget {
 }
 
 class _SavedPlacesState extends State<SavedPlaces> {
-  List<PlaceData> places = [];
-
-  void updateData() {
-    debugPrint("AAA: ${places.isNotEmpty ? places[0].name : []}");
-    if (widget.db != null) {
-      widget.db!
-          .query('Place',
-              columns: [
-                'id',
-                'google_id',
-                'name',
-                'description',
-                'lat',
-                'lng',
-                'icon_url',
-              ],
-              orderBy: 'name')
-          .then((result) {
-        debugPrint("BBB*: ${places.isNotEmpty ? places[0].name : []}");
-        var newPlaces = result
-            .map((row) => PlaceData(
-                id: row['id'] as int,
-                placeId: row['google_id'] as String,
-                name: row['name'] as String,
-                description: row['description'] as String,
-                location: LatLng(row['lat'] as double, row['lng'] as double),
-                icon: Uri.parse(row['icon_url'] as String)))
-            .toList(growable: false);
-        var eq = const ListEquality().equals;
-        debugPrint(
-            "IDENT: ${places.isEmpty ? '[]' : identical(places[0].name, newPlaces[0].name)}");
-        debugPrint(
-            "BBB: ${places.isNotEmpty ? places[0].name : []} / ${newPlaces.isNotEmpty ? newPlaces[0].name : []}");
-        if (!eq(newPlaces, places)) {
-          debugPrint("CCC");
-          setState(() {
-            places = newPlaces;
-          });
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     updateData();
@@ -413,8 +412,7 @@ class _SavedPlacesState extends State<SavedPlaces> {
             onTap: () => Navigator.pop(context)),
         title: const Text("Saved Places"),
       ),
-      body: _SavedPlacesList(
-          db: widget.db, places: places, onUpdateData: updateData),
+      body: _SavedPlacesList(db: widget.db, places: places),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
