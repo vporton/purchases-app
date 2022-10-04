@@ -7,7 +7,6 @@
 - Use widget keys?
 - Help.
 - How to dispose `TextEditingController`?
-- Initiate Google Maps when clicking by price in category.
 - Limit amount of money spent by hiding Google API behind my own proxy server, sell in app
   access to that server.
 - Use `ListTile` class where appropriate.

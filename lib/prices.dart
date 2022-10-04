@@ -1,7 +1,9 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:collection/collection.dart';
@@ -231,15 +233,18 @@ class CategoryPrices extends StatefulWidget {
   State<StatefulWidget> createState() => CategoryPricesState();
 }
 
+// TODO: Rename.
 class PriceDataWithPlaceName {
   PriceData priceData;
   String placeName;
   String productName;
+  LatLng coord;
 
   PriceDataWithPlaceName(
       {required this.priceData,
       required this.placeName,
-      required this.productName});
+      required this.productName,
+      required this.coord});
 }
 
 class CategoryPricesState extends State<CategoryPrices> {
@@ -265,11 +270,11 @@ class CategoryPricesState extends State<CategoryPrices> {
         }
       });
       widget.db!.rawQuery(
-          'SELECT Product.category categoryId, product.id, shop, price, place.name name, Category.name productName '
+          'SELECT Product.category categoryId, product.id, shop, price, place.name name, lat, lng, Category.name productName '
           'FROM Product INNER JOIN Place ON Product.shop=Place.id INNER JOIN Category ON Product.category=Category.id '
           'WHERE categoryId=? '
           'UNION '
-          'SELECT Category.id categoryId, CategoryRel.sub id, shop, price, place.name name, Category.name productName FROM Product '
+          'SELECT Category.id categoryId, CategoryRel.sub id, shop, price, place.name name, lat, lng, Category.name productName FROM Product '
           'INNER JOIN Place ON Product.shop=Place.id '
           'INNER JOIN CategoryRel ON sub=categoryId '
           'INNER JOIN Category ON Product.category=Category.id '
@@ -285,6 +290,8 @@ class CategoryPricesState extends State<CategoryPrices> {
                         placeIndex: r['shop'] as int,
                         categoryIndex: passedCategoryId,
                         price: r['price'] as double),
+                    coord: LatLng(
+                        r['lat'] as double, r['lng'] as double),
                     placeName: r['name'] as String,
                     productName: r['productName'] as String))
                 .toList(growable: false);
@@ -306,14 +313,20 @@ class CategoryPricesState extends State<CategoryPrices> {
           children: prices == null
               ? []
               : prices!
-                  .map((r) => Column(
+                  .map((r) => InkWell(
+                      onTap: () {
+                        MapsLauncher.launchCoordinates(
+                                r.coord.latitude, r.coord.longitude)
+                            .then((v) {});
+                      },
+                      child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                                 "${formatCurrency.format(r.priceData.price)} ${r.placeName}",
                                 textScaleFactor: 2.0),
                             Text(r.productName),
-                          ]))
+                          ])))
                   .toList(growable: false),
         ))
       ]),
