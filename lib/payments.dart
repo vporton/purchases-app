@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqflite/sqflite.dart';
 
@@ -27,7 +28,8 @@ class PaymentsState extends State<Payments> {
   Future<void> updateCredits() async {
     if (widget.db != null) {
       final account = await getInstallationId(widget.db!);
-      debugPrint('UUUU: ${"${dotenv.env['GOOGLE_PROXY_PREFIX']!}balance/${account}"}');
+      debugPrint(
+          'UUUU: ${"${dotenv.env['GOOGLE_PROXY_PREFIX']!}balance/${account}"}');
       final resp = await http.get(
           Uri.parse("${dotenv.env['GOOGLE_PROXY_PREFIX']!}balance/${account}"));
       final newCredits = double.parse(resp.body);
@@ -51,8 +53,15 @@ class PaymentsState extends State<Payments> {
           title: const Text("Credits"),
         ),
         body: Column(children: [
-          Text(credits == null ? "Credits: Loading..." : "Credits: \$${credits.toString()}",
+          Text(
+              credits == null
+                  ? "Credits: Loading..."
+                  : "Credits: \$${credits.toString()}",
               textScaleFactor: 2.0),
+          TextButton(
+              onPressed: () async {
+              },
+              child: Text('pay')),
         ]));
   }
 }
