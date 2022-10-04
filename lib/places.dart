@@ -221,8 +221,10 @@ class _SavedPlaceListState extends State<_SavedPlacesList> {
                 icon: Uri.parse(row['icon_url'] as String)))
             .toList(growable: false);
         var eq = const ListEquality().equals;
+        debugPrint("AAA: ${newPlaces.length}");
         if (!eq(newPlaces, places)) {
           setState(() {
+            debugPrint("BBB");
             places = newPlaces;
           });
         }
@@ -245,10 +247,9 @@ class _SavedPlaceListState extends State<_SavedPlacesList> {
       case _PlacesMenuOp.delete:
         askDeletePermission(context).then((reply) {
           if (reply) {
-            widget.db!
-                .delete('Place',
-                    where: 'id=?', whereArgs: [places[item.index].id])
-                .then((s) => updateData());
+            widget.db!.delete('Place',
+                where: 'id=?',
+                whereArgs: [places[item.index].id]).then((s) => updateData());
           }
         });
         break;
@@ -257,6 +258,8 @@ class _SavedPlaceListState extends State<_SavedPlacesList> {
 
   @override
   Widget build(BuildContext context) {
+    updateData();
+
     return ListView.separated(
       separatorBuilder: (context, index) => const Divider(
         color: Colors.black45,
@@ -414,7 +417,9 @@ class _SavedPlacesState extends State<SavedPlaces> {
             Navigator.pushNamed(context, '/places/nearby',
                     arguments: widget.coord)
                 .then((value) {
-              ++counter; // hack
+              setState(() {
+                ++counter; // hack
+              });
             });
           }),
     );
