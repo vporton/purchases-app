@@ -187,7 +187,7 @@ class _PricesEditState extends State<PricesEdit> {
               debugPrint("ZZZ: ${text}");
               setState(() {
                 data!.price = double.parse(text); // TODO: Is `!` valid?
-1              });
+              });
             },
           )
         ]),
