@@ -185,10 +185,12 @@ class _PlacesList extends StatelessWidget {
 
 class _SavedPlacesList extends StatefulWidget {
   final Database? db;
-  final List<PlaceData> places;
+  int counter;
 
-  _SavedPlacesList(
-      {required this.db, required this.places, required this.onUpdateData});
+  _SavedPlacesList({required this.db, required this.counter});
+
+  @override
+  State<StatefulWidget> createState() => _SavedPlaceListState();
 }
 
 class _SavedPlaceListState extends State<_SavedPlacesList> {
@@ -394,10 +396,10 @@ class SavedPlaces extends StatefulWidget {
 }
 
 class _SavedPlacesState extends State<SavedPlaces> {
+  int counter = 0;
+
   @override
   Widget build(BuildContext context) {
-    updateData();
-
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
@@ -405,14 +407,14 @@ class _SavedPlacesState extends State<SavedPlaces> {
             onTap: () => Navigator.pop(context)),
         title: const Text("Saved Places"),
       ),
-      body: _SavedPlacesList(db: widget.db, places: places),
+      body: _SavedPlacesList(db: widget.db, counter: counter),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
             Navigator.pushNamed(context, '/places/nearby',
                     arguments: widget.coord)
                 .then((value) {
-              updateData();
+              ++counter; // hack
             });
           }),
     );

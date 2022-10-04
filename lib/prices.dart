@@ -184,6 +184,7 @@ class _PricesEditState extends State<PricesEdit> {
             ],
             keyboardType: TextInputType.number,
             onChanged: (text) {
+              debugPrint("ZZZ: ${text}");
               setState(() {
                 data!.price = double.parse(text); // TODO: Is `!` valid?
 1              });
