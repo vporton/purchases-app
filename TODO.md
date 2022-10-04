@@ -11,6 +11,5 @@
   access to that server.
 - Use `ListTile` class where appropriate.
 - The map does not update markers when creating/deleting places.
-- After entering price, the OK button does not become enabled, until I switch to another widget.
 
 See also `TODO` and `FIXME` in the source.
