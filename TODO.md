@@ -11,5 +11,6 @@
   access to that server.
 - Use `ListTile` class where appropriate.
 - The map does not update markers when creating/deleting places.
+- Interchange of prices between users.
 
 See also `TODO` and `FIXME` in the source.
