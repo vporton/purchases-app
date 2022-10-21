@@ -16,7 +16,8 @@
   - Shop authenticates to Google Business for verification and then
     edits categories and prices in the same way as a user (except that the shop is fixed).
     Afterward, a user can retrieve shop data and include kinds of products from the shop
-    in hist category structure, except than can't change internal relations between shop-specific
-    categories.
+    in his category structure: when editing subcategories of a category, the app will also
+    show shop-owner's categories with small font specifying the place.
+    Shop-owner categories can be added when adding a place.
 
 See also `TODO` and `FIXME` in the source.
