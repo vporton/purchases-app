@@ -13,5 +13,10 @@
 - The map does not update markers when creating/deleting places.
 - Interchange of prices between users.
 - Entering prices by shops.
+  - Shop authenticates to Google Business for verification and then
+    edits categories and prices in the same way as a user (except that the shop is fixed).
+    Afterward, a user can retrieve shop data and include kinds of products from the shop
+    in hist category structure, except than can't change internal relations between shop-specific
+    categories.
 
 See also `TODO` and `FIXME` in the source.
